@@ -74,38 +74,16 @@ with onglets[5]:
     col_1_Jonas, col_2_Jonas, col_3_Jonas, col_4_Jonas= st.columns(4)
     
     with col_1_Jonas: # sport
-        # choix_sport_temporary_jonas = st.selectbox("Discipline", ["Biathlon", "Ski de fond"], key="choix_sport_Jonas", on_change=off_button_click_jonas)
         choix_sport_temporary_jonas = st.selectbox("Discipline", ["Biathlon"], key="choix_sport_Jonas", on_change=off_button_click_jonas)
 
 
     with col_2_Jonas: # saison
-        # choix_saison_temporary_jonas = st.selectbox("Saison", ["2022-2023", "2023-2024", "2024-2025", "2025-2026"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_3_Jonas: # lieu de la course
-        # choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oberhof (GER)",
-        #                                                 "Oestersund (SWE)",
-        #                                                 "Hochfilzen (AUT)",
-        #                                                 "Lenzerheide (SUI)",
-        #                                                 "Ruhpolding (GER)",
-        #                                                 "Antholz-Anterselva (ITA)",
-        #                                                 "Nove Mesto Na Morave (CZE)",
-        #                                                 "Oslo Holmenkollen (NOR)",
-        #                                                 "Soldier hollow (USA)",
-        #                                                 "Canmore (CAN)",
-        #                                                 "Kontiolahti (FIN)",
-        #                                                 "Annecy-Le grand bornand (FRA)",
-        #                                                 "Pokljuk (SLO)",
-        #                                                 "Otepaa (EST)",
-        #                                                 "Obertilliach (AUT)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
-        
         choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
     with col_4_Jonas: # type de la course
-        # choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint", 
-        #                                                 "Men 20km Individual", "Women 15 Individual", 
-        #                                                 "Men 15km Short Individual", "Women 12.5km Short Individual",
-        #                                                 "Poursuite hommes", "Poursuite femmes"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
         choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
 
 
