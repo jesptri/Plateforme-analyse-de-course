@@ -60,8 +60,10 @@ onglets = st.tabs(noms_des_onglets)
 ### ONGLET POUR JONAS ###
 
 
-csv_st_file_path_split = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_split.csv"
-csv_st_file_path_type = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_type_de_portion.csv"
+# csv_st_file_path_split = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_split.csv"
+csv_st_file_path_split = "data_listes_split.csv"
+# csv_st_file_path_type = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_type_de_portion.csv"
+csv_st_file_path_type = data_listes_type_de_portion.csv"
 
 
 with onglets[5]:
@@ -115,7 +117,8 @@ with onglets[5]:
     #     st.subheader("Valider la course en cliquant sur le bouton !")        
     if st.session_state.button_clicked_jonas == True:
         
-        path_check = f"jesptri\\Plateforme-analyse-de-course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
+        # path_check = f"jesptri\\Plateforme-analyse-de-course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
+        path_check = f"{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
         path_check_if_exists = Path(path_check)
         if path_check_if_exists.is_file() and is_zipfile_valid(path_check_if_exists):
             st.success("Données du site IBU déjà téléchargées pour cette course !")
@@ -299,7 +302,9 @@ with onglets[0]:
       
     # Création du bouton pour valider les choix
         
-    chemin_fichier_excel = f"jesptri\\Analyse_de_course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
+    # chemin_fichier_excel = f"jesptri\\Analyse_de_course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
+    chemin_fichier_excel = f"{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
+
     
     file_path = Path(chemin_fichier_excel)
     
