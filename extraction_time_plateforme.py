@@ -7,7 +7,7 @@ from selenium import webdriver
 
 ### IMPORTS CLASSIQUES
 
-from openpyxl import Workbook
+# from openpyxl import Workbook
 from time import sleep
 from time import time
 import pandas as pd
