@@ -239,7 +239,7 @@ with onglets[5]:
             
                 for liste_type in loaded_file_type:
                     if loaded_file_type[liste_type]:
-                        st.markdown(f"**{liste_type.replace("split_type_de_portion_","")}:**  \n Portions en bosse: {loaded_file_type[liste_type][0]}  \n Portions en descente: {loaded_file_type[liste_type][1]}  \n Portions plates: {loaded_file_type[liste_type][2]}  \n Portions vallonées: {loaded_file_type[liste_type][3]}")               
+                        st.markdown(f"**{liste_type.replace('split_type_de_portion_','')}:**  \n Portions en bosse: {loaded_file_type[liste_type][0]}  \n Portions en descente: {loaded_file_type[liste_type][1]}  \n Portions plates: {loaded_file_type[liste_type][2]}  \n Portions vallonées: {loaded_file_type[liste_type][3]}")
                 dictionnaire_course_liste_type = loaded_file_type
                 # print("dictionnaire_course_liste_type: " + str(dictionnaire_course_liste_type))
             
