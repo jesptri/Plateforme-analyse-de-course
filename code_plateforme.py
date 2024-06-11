@@ -324,6 +324,8 @@ with onglets[0]:
         message_placeholder = st.empty()  
         
     dictionnaire_course_liste_st = load_split_list(csv_st_file_path_split)
+
+    print("dictionnaire_course_liste_st: " + str(dictionnaire_course_liste_st))
                 
     # if not st.session_state.button_clicked:
     #     with onglets[1]:
