@@ -10,7 +10,6 @@ from fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
 from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 from fonctions_utiles_code_plateforme import f_liste_distance_des_ST
 
-@st.cache_data
 def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots):
     
     ### REPERER L'ATHLETE AU MEILLEUR TEMPS DE SKI PAR SON DOSSARD
@@ -319,7 +318,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
     
     return fig_analyse_portion_specifique
         
-@st.cache_data
+
 def analyse_portion_specifique_ratio_individuel(df, top_n, split_amont, nationalites_a_afficher, biathletes_a_afficher, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots): 
     
     df_filtered = df.loc[(df['Ranking'] <= top_n) | (df['Country'].isin(nationalites_a_afficher)) | (df['Name'].isin(biathletes_a_afficher))].sort_values(by='Ranking').reset_index(drop=True)
@@ -377,7 +376,7 @@ def analyse_portion_specifique_ratio_individuel(df, top_n, split_amont, national
     
     return fig_ratio_top_N
 
-@st.cache_data
+
 def analyse_toutes_les_portions_individuel(df, noms_intermediaires, biathletes_a_afficher, nationalites_a_afficher, top_n_to_show, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     df_moy_3_tours = df_to_df_moy_3_tours(df, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)[0]   
@@ -443,7 +442,7 @@ def analyse_toutes_les_portions_individuel(df, noms_intermediaires, biathletes_a
     
     return fig_subplot
 
-@st.cache_data
+
 def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_a_afficher, biathletes_a_afficher, nationalites_a_afficher, top_n_to_show, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     df_moy_3_tours = df_to_df_moy_3_tours(df, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)[0]   
@@ -495,7 +494,7 @@ def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_
     
     return fig_intermediaire_seul
 
-@st.cache_data
+
 def analyse_type_de_portion_individuel(df, noms_intermediaires, noms_intermediaires_bosses_arg, noms_intermediaires_descentes_arg, noms_intermediaires_vallonés_arg, noms_intermediaires_plats_arg, biathletes_a_afficher, nationalites_a_afficher, top_n_to_show, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     if top_n_to_show < 25:
@@ -657,7 +656,7 @@ def analyse_type_de_portion_individuel(df, noms_intermediaires, noms_intermediai
     
     
     
-@st.cache_data  
+ 
 def analyse_portion_specifique_ratio_nationalite(df, split_amont, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots): 
     
     df.sort_values(by='Finish', inplace=True)
@@ -722,7 +721,7 @@ def analyse_portion_specifique_ratio_nationalite(df, split_amont, nombre_FRA, no
     
     return fig_ratio_nationalites
   
-@st.cache_data 
+ 
 def analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     df.sort_values(by="Finish").reset_index(drop=True, inplace=True)
@@ -791,7 +790,7 @@ def analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA
     
     return fig_subplot 
   
-@st.cache_data
+
 def analyse_une_seule_portion_nationalites(df, noms_intermediaires, intermediaire_a_afficher, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
    
     df.sort_values(by="Finish").reset_index(drop=True, inplace=True)
@@ -843,7 +842,7 @@ def analyse_une_seule_portion_nationalites(df, noms_intermediaires, intermediair
     
     return fig
 
-@st.cache_data 
+
 def analyse_type_de_portion_nationalite(df, noms_intermediaires, noms_intermediaires_bosses_arg, noms_intermediaires_descentes_arg, noms_intermediaires_plats_arg, noms_intermediaires_vallonés_arg, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, nombre_de_shoots, distance_de_1_tour, distance_toute_la_course):
     
     df.sort_values(by="Finish").reset_index(drop=True, inplace=True)
@@ -1053,7 +1052,6 @@ def analyse_type_de_portion_nationalite(df, noms_intermediaires, noms_intermedia
 
     return fig_chronos_3_tours_nationalite, fig_type_de_portion_bosses, fig_type_de_portion_plats, fig_type_de_portion_descentes, fig_type_de_portion_vallonés
 
-@st.cache_data
 def analyse_portion_specifique_graphe_1_par_nationalite(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nb_FRA, nb_NOR, nb_GER, nb_SWE, nb_ITA, nombre_de_shoots):
     
     # Boucle pour remettre les split time dans l'ordre s'ils sont mélangés dans la liste argument
