@@ -7,7 +7,7 @@ from fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
 
 # from code_superman_plateforme import *
 
-@st.cache_data
+
 def f_points_forts_faibles_plateforme(df, df_temps_de_ski, biathletes_a_afficher, nationalites_a_afficher, noms_intermediaires, sexe, split_tour_par_tour, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     ##  A PARTIR DU DF DE BASE JE CREE LE DF AVEC LA MOYENNE DES 3 TOURS POUR CHAQUE PORTION ##
