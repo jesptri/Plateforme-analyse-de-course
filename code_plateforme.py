@@ -238,30 +238,13 @@ with onglets[0]:
         choix_sport_temporary = st.selectbox("Discipline", ["Biathlon"]) #["Biathlon", "Ski de fond"])
 
     with col2: # saison
-        choix_saison_temporary = st.selectbox("Saison", ["2022-2023", "2023-2024", "2024-2025", "2025-2026"], on_change=on_selectbox_change)
+        choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
 
     with col3: # lieu de la course
-        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oberhof (GER)",
-                                                        "Oestersund (SWE)",
-                                                        "Hochfilzen (AUT)",
-                                                        "Lenzerheide (SUI)",
-                                                        "Ruhpolding (GER)",
-                                                        "Antholz-Anterselva (ITA)",
-                                                        "Nove Mesto na Morave (CZE)",
-                                                        "Oslo Holmenkollen (NOR)",
-                                                        "Soldier hollow (USA)",
-                                                        "Canmore (CAN)",
-                                                        "Kontiolahti (FIN)",
-                                                        "Annecy-Le grand bornand (FRA)",
-                                                        "Pokljuk (SLO)",
-                                                        "Otepaa (EST)",
-                                                        "Obertilliach (AUT)"], on_change=on_selectbox_change)
+        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)"], on_change=on_selectbox_change)
 
     with col4: # type de la course
-        choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint", 
-                                                        "Men 20km Individual", "Women 15 Individual", 
-                                                        "Men 15km Short Individual", "Women 12.5km Short Individual",
-                                                        "Poursuite hommes", "Poursuite femmes"], on_change=on_selectbox_change)
+        choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint"], on_change=on_selectbox_change)
      
     if "Men" in choix_type_de_la_course_temporary:
         choix_homme_ou_femme = "homme"
