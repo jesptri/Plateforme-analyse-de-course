@@ -1,0 +1,9 @@
+pandas
+matplotlib
+streamlit
+time
+csv
+json
+os
+pathlib
+selenium
