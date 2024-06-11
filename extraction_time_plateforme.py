@@ -48,7 +48,7 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
 
 
     # if moteur_de_recherche == "edge":
-    PATH = "jesptri\\Analyse_de_course\\pour_selenium\\msedgedriver.exe"
+    PATH = "jesptri\\Plateforme-analyse-de-course\\msedgedriver.exe"
     service = Service(PATH)
     
     edge_options = Options()
@@ -243,7 +243,7 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
     
     ### CREATION DU FICHIER EXCEL ###
 
-    chemin_fichier_excel = f"jesptri\\Analyse_de_course\\data_ibu_excel\\{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx"
+    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx"
     writer = pd.ExcelWriter(chemin_fichier_excel, engine='xlsxwriter')
     
     ### SELECTION DES SPLIT TIME ###
