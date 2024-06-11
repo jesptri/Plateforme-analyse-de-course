@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 
 from code_superman_plateforme import *
 from fonctions_utiles_code_plateforme import *
-    
+
+st.cache_data()
 def graphes_moustaches(df, noms_intermediaires, nationalites, sexe, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
 
     ### MOYENNE DES TROIS TOURS POUR CHAQUE PORTION DU CIRCUIT ###
