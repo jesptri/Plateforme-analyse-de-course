@@ -487,7 +487,6 @@ def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_
         plt.grid(True, axis='y', linewidth=0.2, color="grey")    
         plt.title(intermediate, fontsize=10)
         plt.ylabel('Chronos (s)')#, fontsize=10)
-        print("prouuuut: " + str(df_moy_3_tours_filtered))
         plt.xticks(np.arange(df_moy_3_tours_filtered.shape[0]),[str(df_moy_3_tours_filtered["Ranking"][i]) + " - " + df_moy_3_tours_filtered["Name"][i] for i in range(df_moy_3_tours_filtered.shape[0])], rotation=90, fontsize=8)
         # plt.xticks(np.arange(df_moy_3_tours_filtered.shape[0]), df_moy_3_tours_filtered['Name'].unique(), rotation=90, fontsize=8)
 
