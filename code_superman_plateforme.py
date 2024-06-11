@@ -14,7 +14,7 @@ from fonctions_utiles_code_plateforme import *
 
 
 
-# @st.cache_data
+
 def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depart_des_ST, df, indices_a_enlever, sexe, top_n, nationalites_a_afficher, indices, biathletes, nombre_de_shoots):
     
     fontize_xticks = 6
