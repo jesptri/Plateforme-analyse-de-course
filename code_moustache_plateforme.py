@@ -11,8 +11,6 @@ def graphes_moustaches(df, df_temps_de_ski, liste_distance_des_ST, noms_intermed
         
     df_moy_3_tours = df_to_df_moy_3_tours(df, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)[0]
     
-    print("df_moy_3_tours: " + str(df_moy_3_tours))
-    
     df_moy_3_tours.sort_values(by="Ranking").reset_index(drop=True, inplace=True)
     
     meilleurs_chronos = []
