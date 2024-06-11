@@ -163,13 +163,6 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,4] - moyenne_des_3_tours)
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,5] - moyenne_des_3_tours)
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,6] - moyenne_des_3_tours)
-            if df_3_tours.iloc[index_biathlete, 2] == "BOE J.T.":
-                print("J.T. BOE")
-                print("moyenne_des_3_tours: " + str(moyenne_des_3_tours))                
-                print(("tour 1: " + str(df_3_tours.iloc[index_biathlete,4])))
-                print(("tour 2: " + str(df_3_tours.iloc[index_biathlete,5])))
-                print(("tour 3: " + str(df_3_tours.iloc[index_biathlete,6])))
-                print("ecarts_X_tours: " + str(ecarts_X_tours[index_biathlete]))
                                 
         fig5 = plt.figure()
         
@@ -208,7 +201,6 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,6] - moyenne_des_5_tours)
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,7] - moyenne_des_5_tours)
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,8] - moyenne_des_5_tours)
-            print("ecarts_X_tours[index_biathlete]: " + str(ecarts_X_tours[index_biathlete]))
             
         fig5 = plt.figure()
         
