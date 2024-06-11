@@ -407,7 +407,7 @@ with onglets[0]:
         distance_de_1_tour = float(extract_distances(choix_type_de_la_course)[0])/(nombre_de_shoots+1)
 
 
-        df = pd.read_excel(f"jesptri\\Analyse_de_course\\data_ibu_excel\\{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}.xlsx", engine='openpyxl')
+        df = pd.read_excel(f"{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}.xlsx", engine='openpyxl')
 
 
 
