@@ -3,3 +3,4 @@ matplotlib
 streamlit
 selenium
 numpy
+openpyxl
