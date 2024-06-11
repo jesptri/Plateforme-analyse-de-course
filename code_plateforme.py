@@ -464,11 +464,8 @@ with onglets[0]:
             _, col_moustache, _ = st.columns([2,8,2])
 
             with col_moustache:
-                top_n =  st.slider("Ecart entre le Superman et le top ...", min_value=1, max_value=80, value=15)
-                st.pyplot(graphes_moustaches(df, f_df_sans_temps_shoot(df, nombre_de_shoots)[0], 
-                                            f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[0], 
-                                            ["Intermédiaire " + str(i) for i in range(1, len(split_tour_par_tour(df, nombre_de_shoots)[0]) + 1)], # revoir ici
-                                            nationalites_1, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, top_n, nombre_de_shoots), clear_figure=True, use_container_width=True)
+                st.pyplot(graphes_moustaches(df, ["Intermédiaire " + str(i) for i in range(1, len(split_tour_par_tour(df, nombre_de_shoots)[0]) + 1)], # revoir ici
+                        nationalites_1, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots), clear_figure=True, use_container_width=True)
 
 
 
