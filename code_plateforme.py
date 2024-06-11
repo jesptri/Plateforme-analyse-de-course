@@ -89,8 +89,6 @@ with onglets[5]:
 
     st.button('Cliquez pour valider', key="bouton Jonas", on_click=on_button_click_jonas)
     
-    print("le bouton jonas est cliqué ou pas ??? " + str(st.session_state.button_clicked_jonas))
-
     # if st.session_state.button_clicked_jonas == False:
     #     st.subheader("Valider la course en cliquant sur le bouton !")        
     if st.session_state.button_clicked_jonas == True:
@@ -279,9 +277,7 @@ with onglets[0]:
     
     
     ### BOUTON VALIDER APPUYE OU PAS ###
-   
-    print("le bouton coach est cliqué ou pas ??? " + str(st.session_state.button_clicked))
-   
+      
     st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
         
     _, col_texte, _ = st.columns([5,6,3])
@@ -290,8 +286,6 @@ with onglets[0]:
         message_placeholder = st.empty()  
         
     dictionnaire_course_liste_st = load_split_list(csv_st_file_path_split)
-
-    print("dictionnaire_course_liste_st: " + str(dictionnaire_course_liste_st))
                 
     # if not st.session_state.button_clicked:
     #     with onglets[1]:
@@ -336,12 +330,9 @@ with onglets[0]:
                 SPLIT_TIME = dictionnaire_course_liste_st[split_course]
         
         try:
-            print("avant fonction")
             time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
-            print("après fonction")
             # break
         except:
-            print("ca bug")
             message_placeholder.error("**Erreur, vérifiez les données ou réessayez !**")
         
     
