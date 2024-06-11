@@ -7,6 +7,7 @@ from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 
 # df = pd.read_excel("c:\\Users\\jules\\Desktop\\Stage CNSNMM\\Analyse de course\\Lenzerheide\\ST sprint femmes.xlsx", sheet_name='ST Lenzerheide')
 
+st.cache_data()
 def tableau_temps_de_ski(df, nombre_de_shoots):
     df_sans_temps_shoot = f_df_sans_temps_shoot(df, nombre_de_shoots)[7]
     df_sans_temps_shoot = df_sans_temps_shoot.sort_values(by="Finish")
@@ -29,7 +30,7 @@ def tableau_temps_de_ski(df, nombre_de_shoots):
     return df_tableau
 
 
-
+st.cache_data()
 def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
     
     if top_n < 25:
