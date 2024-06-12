@@ -798,10 +798,9 @@ with onglets[0]:
             
             st.subheader("Toutes les portions")  
             
-            
-            fig_toutes_les_portions_par_nationalite = analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
+            # fig_toutes_les_portions_par_nationalite = analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
 
-            st.pyplot(fig_toutes_les_portions_par_nationalite)
+            # st.pyplot(fig_toutes_les_portions_par_nationalite)
 
 
 
