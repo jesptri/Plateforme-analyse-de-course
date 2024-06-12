@@ -329,11 +329,11 @@ with onglets[0]:
             if key in split_course:    
                 SPLIT_TIME = dictionnaire_course_liste_st[split_course]
         
-        try:
-            time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
-            # break
-        except:
-            message_placeholder.error("**Erreur, vérifiez les données ou réessayez !**")
+        # try:
+        time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
+        #     # break
+        # except:
+        #     message_placeholder.error("**Erreur, vérifiez les données ou réessayez !**")
         
     
     ### SI AU CONTRAIRE LE FICHIER EXISTE ###
