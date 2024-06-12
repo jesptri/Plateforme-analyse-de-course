@@ -745,21 +745,21 @@ with onglets[0]:
             with st.container(height=300): 
                 col_graphe_bosse, col_graphe_descente, col_graphe_plat, col_graphe_valloné = st.columns(4)
                            
-            try:      
+                try:      
+                    
+                    fig_chronos_3_tours_nationalite, fig_type_de_portion_bosses, fig_type_de_portion_plats, fig_type_de_portion_descentes, fig_type_de_portion_vallonés = analyse_type_de_portion_nationalite(df, noms_intermediaires, noms_intermediaires_bosses, noms_intermediaires_descentes, noms_intermediaires_plats, noms_intermediaires_vallones, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, nombre_de_shoots, distance_de_1_tour, distance_toute_la_course)
+    
+                    with col_graphe_bosse:
+                        st.pyplot(fig_type_de_portion_bosses)
+                    with col_graphe_descente:
+                        st.pyplot(fig_type_de_portion_descentes)
+                    with col_graphe_plat:
+                        st.pyplot(fig_type_de_portion_plats)
+                    with col_graphe_valloné:
+                        st.pyplot(fig_type_de_portion_vallonés)
                 
-                fig_chronos_3_tours_nationalite, fig_type_de_portion_bosses, fig_type_de_portion_plats, fig_type_de_portion_descentes, fig_type_de_portion_vallonés = analyse_type_de_portion_nationalite(df, noms_intermediaires, noms_intermediaires_bosses, noms_intermediaires_descentes, noms_intermediaires_plats, noms_intermediaires_vallones, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, nombre_de_shoots, distance_de_1_tour, distance_toute_la_course)
-
-                with col_graphe_bosse:
-                    st.pyplot(fig_type_de_portion_bosses)
-                with col_graphe_descente:
-                    st.pyplot(fig_type_de_portion_descentes)
-                with col_graphe_plat:
-                    st.pyplot(fig_type_de_portion_plats)
-                with col_graphe_valloné:
-                    st.pyplot(fig_type_de_portion_vallonés)
-            
-            except:
-                st.error("Données types de portion non rentrées pour la course sélectionnée !")
+                except:
+                    st.error("Données types de portion non rentrées pour la course sélectionnée !")
 
 
             ### GLISSE PAR NATIONALITE ###
@@ -798,9 +798,9 @@ with onglets[0]:
             
             st.subheader("Toutes les portions")  
             
-            # fig_toutes_les_portions_par_nationalite = analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
+            fig_toutes_les_portions_par_nationalite = analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
 
-            # st.pyplot(fig_toutes_les_portions_par_nationalite)
+            st.pyplot(fig_toutes_les_portions_par_nationalite)
 
 
 
