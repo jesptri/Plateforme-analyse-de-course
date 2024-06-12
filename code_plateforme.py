@@ -616,6 +616,7 @@ with onglets[0]:
                 
             with st.container(height=350):
                 col_graphe_bosse, col_graphe_descente, col_graphe_plat, col_graphe_valloné = st.columns(4)
+                error_message_no_type = st.empty()
 
             with col_top_n_type_de_portion:
                 top_n_to_show = st.slider("Top ...", min_value=1, max_value=80, value=10, key="top N 5")
@@ -637,7 +638,7 @@ with onglets[0]:
                     st.pyplot(fig_type_de_portion_vallonés) 
             
             except:
-                st.error("Données types de portion non rentrées pour la course sélectionnée !")   
+                error_message_no_type.error("Données types de portion non rentrées pour la course sélectionnée !")   
                 
                 
                 
