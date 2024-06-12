@@ -722,7 +722,7 @@ def analyse_portion_specifique_ratio_nationalite(df, split_amont, nombre_FRA, no
     
     return fig_ratio_nationalites
   
-@st.cache_data()
+@st.cache_data 
 def analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
     
     df.sort_values(by="Finish").reset_index(drop=True, inplace=True)
@@ -789,7 +789,7 @@ def analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA
 
         plt.tight_layout()
     
-    return fig_subplot 
+    return fig_subplot  
   
 @st.cache_data()
 def analyse_une_seule_portion_nationalites(df, noms_intermediaires, intermediaire_a_afficher, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):
