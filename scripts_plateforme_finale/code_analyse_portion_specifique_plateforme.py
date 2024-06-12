@@ -5,10 +5,10 @@ import streamlit as st
 
 # from code_superman_plateforme import *
 
-from fonctions_utiles_code_plateforme import split_tour_par_tour
-from fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
-from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
-from fonctions_utiles_code_plateforme import f_liste_distance_des_ST
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import split_tour_par_tour
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import f_liste_distance_des_ST
 
 @st.cache_data()
 def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots):
