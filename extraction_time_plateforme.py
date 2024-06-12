@@ -48,7 +48,7 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
 
 
     # if moteur_de_recherche == "edge":
-    PATH = "jesptri\\Plateforme-analyse-de-course\\msedgedriver.exe"
+    PATH = "msedgedriver.exe"
     service = Service(PATH)
     
     edge_options = Options()
