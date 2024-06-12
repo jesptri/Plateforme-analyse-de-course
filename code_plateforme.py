@@ -331,9 +331,10 @@ with onglets[0]:
                 list_found_or_not = True
         
         if not list_found_or_not:
-            st.error("Erreur, liste de split time non trouvée.")
+            message_placeholder.error("Erreur, liste de split time non trouvée.")
+        else: 
         # try:
-        message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
+            message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
         time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
         #     # break
         # except:
