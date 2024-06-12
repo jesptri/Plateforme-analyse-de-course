@@ -321,15 +321,19 @@ with onglets[0]:
 
         ### SI LE FICHIER N'EXISTE PAS ###
 
+    list_found_or_not = False
     if not file_path.is_file():
 
-        message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
         for split_course in dictionnaire_course_liste_st:
             key = f'split_time_{choix_sport}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
             if key in split_course:    
                 SPLIT_TIME = dictionnaire_course_liste_st[split_course]
+                list_found_or_not = True
         
+        if not list_found_or_not:
+            st.error("Erreur, liste de split time non trouvée.")
         # try:
+        message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
         time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
         #     # break
         # except:
