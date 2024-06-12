@@ -81,7 +81,7 @@ with onglets[5]:
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_3_Jonas: # lieu de la course
-        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Canmore (CAN)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
+        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
     with col_4_Jonas: # type de la course
         choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
@@ -239,7 +239,7 @@ with onglets[0]:
         choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
 
     with col3: # lieu de la course
-        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Canmore (CAN)"], on_change=on_selectbox_change)
+        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)"], on_change=on_selectbox_change)
 
     with col4: # type de la course
         choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
