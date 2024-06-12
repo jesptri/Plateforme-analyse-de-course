@@ -242,7 +242,7 @@ with onglets[0]:
         choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)"], on_change=on_selectbox_change)
 
     with col4: # type de la course
-        choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint], on_change=on_selectbox_change)
+        choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
      
     if "Men" in choix_type_de_la_course_temporary:
         choix_homme_ou_femme = "homme"
