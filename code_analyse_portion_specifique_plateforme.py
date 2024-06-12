@@ -729,7 +729,7 @@ def analyse_toutes_les_portions_nationalites(df, noms_intermediaires, nombre_FRA
     
     df_moy_3_tours = df_to_df_moy_3_tours(df, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)[0]   
         
-    fig_subplot = plt.figure(figsize=(10,6))
+    fig_subplot = plt.figure()
 
     # plt.suptitle("Chronos moyens top 10 et français")
     
