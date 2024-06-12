@@ -613,10 +613,6 @@ with onglets[0]:
             # st.write("_Jonas a choisi quelles portions correspondent aux bosses, descentes, etc_")
                 
             col_top_n_type_de_portion, col_nationalites_type_de_portion, col_biathletes_type_de_portion = st.columns(3)
-                
-            with st.container(height=350):
-                col_graphe_bosse, col_graphe_descente, col_graphe_plat, col_graphe_valloné = st.columns(4)
-                error_message_no_type = st.empty()
 
             with col_top_n_type_de_portion:
                 top_n_to_show = st.slider("Top ...", min_value=1, max_value=80, value=10, key="top N 5")
@@ -624,21 +620,23 @@ with onglets[0]:
                 nationalites_a_afficher = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalites 5")
             with col_biathletes_type_de_portion:
                 biathletes_a_afficher = st.multiselect("Biathlètes:", all_athletes, key="biathlètes 5")
-                            
-            try:
-                fig_type_de_portion_bosses, fig_type_de_portion_descentes, fig_type_de_portion_plats, fig_type_de_portion_vallonés = analyse_type_de_portion_individuel(df, noms_intermediaires, noms_intermediaires_bosses, noms_intermediaires_descentes, noms_intermediaires_vallones, noms_intermediaires_plats, biathletes_a_afficher, nationalites_a_afficher, top_n_to_show, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
 
-                with col_graphe_bosse:
-                    st.pyplot(fig_type_de_portion_bosses)
-                with col_graphe_descente:
-                    st.pyplot(fig_type_de_portion_descentes)
-                with col_graphe_plat:
-                    st.pyplot(fig_type_de_portion_plats)
-                with col_graphe_valloné:
-                    st.pyplot(fig_type_de_portion_vallonés) 
-            
-            except:
-                error_message_no_type.error("Données types de portion non rentrées pour la course sélectionnée !")   
+            with st.container(height=350):
+                col_graphe_bosse, col_graphe_descente, col_graphe_plat, col_graphe_valloné = st.columns(4)
+                try:
+                    fig_type_de_portion_bosses, fig_type_de_portion_descentes, fig_type_de_portion_plats, fig_type_de_portion_vallonés = analyse_type_de_portion_individuel(df, noms_intermediaires, noms_intermediaires_bosses, noms_intermediaires_descentes, noms_intermediaires_vallones, noms_intermediaires_plats, biathletes_a_afficher, nationalites_a_afficher, top_n_to_show, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
+    
+                    with col_graphe_bosse:
+                        st.pyplot(fig_type_de_portion_bosses)
+                    with col_graphe_descente:
+                        st.pyplot(fig_type_de_portion_descentes)
+                    with col_graphe_plat:
+                        st.pyplot(fig_type_de_portion_plats)
+                    with col_graphe_valloné:
+                        st.pyplot(fig_type_de_portion_vallonés) 
+                
+                except:
+                    st.error("Données types de portion non rentrées pour la course sélectionnée !")   
                 
                 
                 
