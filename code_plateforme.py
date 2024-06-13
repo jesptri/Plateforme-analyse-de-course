@@ -10,13 +10,13 @@ import json
 
 # from streamlit_option_menu import option_menu
 
-from scripts_plateforme_finale.code_superman_plateforme import *
-from scripts_plateforme_finale.code_moustache_plateforme import *
-from scripts_plateforme_finale.code_analyse_individuelle_plateforme import *
-from scripts_plateforme_finale.code_points_forts_faibles_plateforme import *
-from scripts_plateforme_finale.code_analyse_portion_specifique_plateforme import *
-from scripts_plateforme_finale.fonctions_utiles_code_plateforme import *
-from scripts_plateforme_finale.fonctions_gestion_session_state_plateforme import *
+from code_superman_plateforme import *
+from code_moustache_plateforme import *
+from code_analyse_individuelle_plateforme import *
+from code_points_forts_faibles_plateforme import *
+from code_analyse_portion_specifique_plateforme import *
+from fonctions_utiles_code_plateforme import *
+from fonctions_gestion_session_state_plateforme import *
 
 from extraction_time_plateforme import time_data_to_excel
 

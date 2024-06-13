@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from scripts_plateforme_finale.fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
+from fonctions_utiles_code_plateforme import df_to_df_moy_3_tours
 
 # from code_superman_plateforme import *
 
