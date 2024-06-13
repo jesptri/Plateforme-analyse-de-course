@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import streamlit as st
 
-from scripts_plateforme_finale.fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
+from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 
 # df = pd.read_excel("c:\\Users\\jules\\Desktop\\Stage CNSNMM\\Analyse de course\\Lenzerheide\\ST sprint femmes.xlsx", sheet_name='ST Lenzerheide')
 
