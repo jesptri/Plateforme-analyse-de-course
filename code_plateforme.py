@@ -61,15 +61,10 @@ onglets = st.tabs(noms_des_onglets)
 
 
 # csv_st_file_path_split = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_split.csv"
-<<<<<<< HEAD
-csv_st_file_path_split = "data_utile_csv\\data_listes_split.csv"
-
-=======
->>>>>>> 5d7ad0a2cf768d2e026a228cba3cd7afb42588ea
 # csv_st_file_path_type = "jesptri\\Plateforme-analyse-de-course\\data_utile_csv\\data_listes_type_de_portion.csv"
 
-csv_st_file_path_split = "data_utile_csv\\data_listes_split.csv"
-csv_st_file_path_type = "data_utile_csv\\data_listes_type_de_portion.csv"
+csv_st_file_path_split = "data_listes_split.csv"
+csv_st_file_path_type = "data_listes_type_de_portion.csv"
 
 
 with onglets[5]:
