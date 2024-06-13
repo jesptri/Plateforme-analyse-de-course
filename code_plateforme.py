@@ -18,7 +18,7 @@ from scripts_plateforme_finale.code_analyse_portion_specifique_plateforme import
 from scripts_plateforme_finale.fonctions_utiles_code_plateforme import *
 from scripts_plateforme_finale.fonctions_gestion_session_state_plateforme import *
 
-from scripts_plateforme_finale.extraction_time_plateforme import time_data_to_excel
+from extraction_time_plateforme import time_data_to_excel
 
 
 ### CONFIGURATION DE LA PAGE ###
