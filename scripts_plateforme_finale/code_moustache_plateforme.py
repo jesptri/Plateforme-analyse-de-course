@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from code_superman_plateforme import *
-from fonctions_utiles_code_plateforme import *
+from scripts_plateforme_finale.code_superman_plateforme import *
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import *
 
 @st.cache_data()
 def graphes_moustaches(df, noms_intermediaires, nationalites, sexe, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots):

@@ -27,7 +27,7 @@ from selenium.webdriver import Edge
 ### IMPORTS AUTRES FONCTIONS ###
 
 # from extraction_nom_nationalite_plateforme import tableau_nom_nationalite
-from fonctions_utiles_code_plateforme import convert_chrono_to_seconds
+from scripts_plateforme_finale.fonctions_utiles_code_plateforme import convert_chrono_to_seconds
 
 
 
