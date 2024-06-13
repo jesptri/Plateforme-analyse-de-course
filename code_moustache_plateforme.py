@@ -12,6 +12,8 @@ def graphes_moustaches(df, noms_intermediaires, nationalites, sexe, distance_de_
     df_moy_3_tours = df_to_df_moy_3_tours(df, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)[0]
     
     df_moy_3_tours.sort_values(by="Ranking").reset_index(drop=True, inplace=True)
+
+    print("df_moy_3_tours: " + str(df_moy_3_tours))
     
     # meilleurs_chronos = []
     # for intermediaire in df_moy_3_tours.columns.tolist()[4:]:
@@ -39,11 +41,11 @@ def graphes_moustaches(df, noms_intermediaires, nationalites, sexe, distance_de_
         # print(index_split,split)
         liste_pour_xticks.append(str(split) + str(" - ") + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split+1]))
     
-    plt.bar(np.arange(len(noms_intermediaires)), listes_coef_de_variation)
+    plt.bar(np.arange(len(noms_intermediaires)), listes_coef_de_variation, width=0.4, color="black")
     plt.xticks(list(range(len(labels[4:]))), liste_pour_xticks, rotation=90, fontsize=10)
     plt.title("Portions créant le plus d'écart")
     plt.grid(True, axis='y', color='grey',  linestyle='--', linewidth=0.04)
-    plt.grid(False)
+    # plt.grid(False)
     plt.tight_layout()
 
     return fig_portions_creant_ecart

@@ -473,9 +473,9 @@ with onglets[0]:
             
             st.subheader("Portions créant de l'écart")
             
-            st.write("_Ce graphe représente la perte de temps moyenne du top ... par rapport au superman_.")
+            st.write("_Plus la barre est haute, plus la portion crée de l'écart entre les biathlètes._")
 
-            _, col_moustache, _ = st.columns([2,8,2])
+            _, col_moustache, _ = st.columns([2,4,2])
 
             with col_moustache:
                 st.pyplot(graphes_moustaches(df, ["Intermédiaire " + str(i) for i in range(1, len(split_tour_par_tour(df, nombre_de_shoots)[0]) + 1)], # revoir ici
@@ -495,7 +495,7 @@ with onglets[0]:
 
             # col_top_n_2, _, col_biathletes_2 = st.columns([5,0.25,5])            
             
-            col_temps_de_ski_total_temps_de_ski_par_tour, _, col_pacing_tour_par_tour, _, col_tableau_temps_de_ski  = st.columns([4,0.2,4,0.2,3])
+            col_temps_de_ski_total_temps_de_ski_par_tour, _, col_pacing_tour_par_tour, _, col_tableau_temps_de_ski  = st.columns([4,0.2,4,0.6,2.6])
 
             with col_temps_de_ski_total_temps_de_ski_par_tour:
                 top_n_2 = st.slider("Top ...", min_value=0, max_value=75, value=10, key="top n 2")
@@ -522,7 +522,7 @@ with onglets[0]:
                 st.pyplot(fig_pacing_tour_par_tour)
                 
             with col_tableau_temps_de_ski:
-                st.markdown("Classement par temps de ski:")
+                st.subheader("Classement par temps de ski:")
                 st.dataframe(tableau_temps_de_ski(df, nombre_de_shoots),hide_index=True)
 
 
