@@ -240,10 +240,19 @@ with onglets[0]:
         choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
 
     with col3: # lieu de la course
-        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)"], on_change=on_selectbox_change)
-
-    with col4: # type de la course
-        choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
+        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)"], on_change=on_selectbox_change)
+    
+    if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
+        with col4: # type de la course
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
+    
+    elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
+        with col4: # type de la course
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Women 15km Individual","Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
+    
+    else: # dans le cas où c'est Antholz
+        with col4: # type de la course
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)      
      
     if "Men" in choix_type_de_la_course_temporary:
         choix_homme_ou_femme = "homme"
@@ -279,7 +288,7 @@ with onglets[0]:
     
     ### BOUTON VALIDER APPUYE OU PAS ###
       
-    st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
+    # st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
         
     _, col_texte, _ = st.columns([5,6,3])
         
@@ -298,7 +307,6 @@ with onglets[0]:
     #     with onglets[4]:
     #         st.subheader("**Sélectionnez une course et validez !**")
         
-    
     choix_saison = choix_saison_temporary
     choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
     choix_type_de_la_course = choix_type_de_la_course_temporary
@@ -426,7 +434,7 @@ with onglets[0]:
             with col_chronos_1:
                 chronos_1 = st.multiselect("Données chronométriques:", ["Début/fin de tour", "Pre-time", "Split-time"])
                 
-            with st.container(height=500):
+            with st.container(height=650):
                 col_ecart_au_leader, col_superman = st.columns(2)
 
             ## GRAPHE 1 ## ### COLONNE ECART AU LEADER ###
@@ -780,8 +788,8 @@ with onglets[0]:
                     
                 col_split_amont_ratio_nationalite, col_nb_FRA, col_nb_NOR, col_nb_GER, col_nb_SWE, col_nb_ITA = st.columns(6)
                 
-                with col_split_amont_ratio_nationalite:   
-                    split_amont_ratio_nationalite = st.selectbox("Portion 1", noms_intermediaires)
+                # with col_split_amont_ratio_nationalite:   
+                split_amont_ratio_nationalite = st.selectbox("Portion 1", noms_intermediaires)
                         
 
                 _, col_ratio_nationalites, _ = st.columns([4,6,4])

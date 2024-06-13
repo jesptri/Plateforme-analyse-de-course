@@ -91,7 +91,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         best_skiier_row = df_analyse_portion_specifique[df_analyse_portion_specifique["Bib"] == dossard_meilleur_skieur]
         
         plt.plot(liste_pour_plot_en_abscisse, [0 for split in liste_pour_plot_en_abscisse], marker="*")
-        plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, 0, best_skiier_row.iloc[0, 2] + " - meilleur temps de ski sur la course")
+        plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, 0, best_skiier_row.iloc[0, 2])# + " - meilleur temps de ski sur la course")
         
         for index_biathlete in range(0,df_best_selected_athlete.shape[0]):
             if df_best_selected_athlete.iloc[index_biathlete, 2] in biathletes_a_afficher or df_best_selected_athlete.iloc[index_biathlete, 3] in nationalites:
