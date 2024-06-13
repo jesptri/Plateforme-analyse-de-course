@@ -248,7 +248,7 @@ with onglets[0]:
     
     elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
         with col4: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Women 15km Individual","Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
     
     else: # dans le cas où c'est Antholz
         with col4: # type de la course
