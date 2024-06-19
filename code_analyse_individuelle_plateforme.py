@@ -4,8 +4,27 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
+from fonctions_utiles_code_plateforme import split_tour_par_tour
 
 # df = pd.read_excel("c:\\Users\\jules\\Desktop\\Stage CNSNMM\\Analyse de course\\Lenzerheide\\ST sprint femmes.xlsx", sheet_name='ST Lenzerheide')
+
+@st.cache_data()
+def tableau_ranking_course(df):
+
+    colonnes_a_copier = ["Ranking", "Name", "Finish"]
+    df_tableau = df.loc[:,colonnes_a_copier].sort_values(by="Ranking")
+    df_tableau = df_tableau.round(0)
+
+    df_tableau = df_tableau.sort_values(by="Ranking").reset_index(drop=True)
+
+    df_tableau.columns = ["Ranking", "Nom", "Temps de course"]
+
+    for index_biathlete in range(1,df_tableau.shape[0]):
+        df_tableau.at[index_biathlete, "Temps de course"] = "+ " + str(df_tableau.at[index_biathlete, "Temps de course"] - df_tableau.at[0, "Temps de course"]) + "s"
+    
+    df_tableau.at[0, "Temps de course"] = str(int(df_tableau.at[0, "Temps de course"]/60)) + "'" + str(int(df_tableau.at[0, "Temps de course"]%60)) + "s"
+
+    return df_tableau
 
 @st.cache_data()
 def tableau_temps_de_ski(df, nombre_de_shoots):
@@ -31,7 +50,7 @@ def tableau_temps_de_ski(df, nombre_de_shoots):
 
 
 st.cache_data()
-def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
+def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_pour_graphe_pacing_tour_1):
     
     if top_n < 25:
         police = 10
@@ -153,20 +172,64 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
     ecarts_X_tours = [[] for _ in range(df_3_tours.shape[0])]
     
     if nombre_de_shoots == 2:
-    
+
+        tous_les_split = split_tour_par_tour(df, nombre_de_shoots)[0] + split_tour_par_tour(df, nombre_de_shoots)[1] + split_tour_par_tour(df, nombre_de_shoots)[2]
+
+        index_des_split_choisis = []
+
+        for split in split_pour_graphe_pacing_tour_1:
+            for index_split_bis, split_bis in enumerate(tous_les_split):
+                if split == split_bis:
+                    index_des_split_choisis.append(index_split_bis)
+
+        # tour 2
+
+        split_pour_graphe_pacing_tour_2 = []
+
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_2.append(split_tour_par_tour(df, nombre_de_shoots)[1][index])
+
+        # tour 3
+
+        split_pour_graphe_pacing_tour_3 = []
+
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_3.append(split_tour_par_tour(df, nombre_de_shoots)[2][index])
+
+        df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0]
+
         for index_biathlete in range(df_3_tours.shape[0]):
-            moyenne_des_3_tours = df_3_tours.iloc[index_biathlete,-1]/3
+            for split in split_pour_graphe_pacing_tour_1:
+
+                # tour 1
+
+                temps_portion_tour_1 = 0
+                for split in split_pour_graphe_pacing_tour_1:
+                    temps_portion_tour_1 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 2
+
+                temps_portion_tour_2 = 0
+                for split in split_pour_graphe_pacing_tour_2:
+                    temps_portion_tour_2 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 3
+
+                temps_portion_tour_3 = 0
+                for split in split_pour_graphe_pacing_tour_3:
+                    temps_portion_tour_3 += df_temps_de_ski.iloc[index_biathlete][split]
 
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,0])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,1])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,2])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,3])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,4] - moyenne_des_3_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,5] - moyenne_des_3_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,6] - moyenne_des_3_tours)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_1 - temps_portion_tour_1) # 2ème terme = pour avoir le premier tour comme référence 
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_2 - temps_portion_tour_1)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_3 - temps_portion_tour_1)
                                 
         fig5 = plt.figure()
         
+        # print("ecarts_X_tours: " + str(ecarts_X_tours))
         for biathlete in biathletes_a_afficher:
             for index_biathlete in range(len(ecarts_X_tours)):
                 if ecarts_X_tours[index_biathlete][2] == biathlete:
@@ -190,18 +253,88 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
                         plt.text(3 + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])          
 
     elif nombre_de_shoots == 4:
-    
+
+        tous_les_split = split_tour_par_tour(df, nombre_de_shoots)[0] + split_tour_par_tour(df, nombre_de_shoots)[1] + split_tour_par_tour(df, nombre_de_shoots)[2] + split_tour_par_tour(df, nombre_de_shoots)[3] + split_tour_par_tour(df, nombre_de_shoots)[4]
+
+        index_des_split_choisis = []
+
+        for split in split_pour_graphe_pacing_tour_1:
+            for index_split_bis, split_bis in enumerate(tous_les_split):
+                if split == split_bis:
+                    index_des_split_choisis.append(index_split_bis)
+
+        # tour 2
+
+        split_pour_graphe_pacing_tour_2 = []
+
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_2.append(split_tour_par_tour(df, nombre_de_shoots)[1][index])
+
+        # tour 3
+
+        split_pour_graphe_pacing_tour_3 = []
+
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_3.append(split_tour_par_tour(df, nombre_de_shoots)[2][index])
+ 
+        # tour 4
+
+        split_pour_graphe_pacing_tour_4 = []
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_4.append(split_tour_par_tour(df, nombre_de_shoots)[3][index])
+
+        # tour 5
+
+        split_pour_graphe_pacing_tour_5 = []
+
+        for index in index_des_split_choisis:
+            split_pour_graphe_pacing_tour_5.append(split_tour_par_tour(df, nombre_de_shoots)[4][index])
+
+        df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0]
+
         for index_biathlete in range(df_3_tours.shape[0]):
-            moyenne_des_5_tours = df_3_tours.iloc[index_biathlete,-1]/5
+            for split in split_pour_graphe_pacing_tour_1:
+
+                # tour 1
+
+                temps_portion_tour_1 = 0
+                for split in split_pour_graphe_pacing_tour_1:
+                    temps_portion_tour_1 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 2
+
+                temps_portion_tour_2 = 0
+                for split in split_pour_graphe_pacing_tour_2:
+                    temps_portion_tour_2 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 3
+
+                temps_portion_tour_3 = 0
+                for split in split_pour_graphe_pacing_tour_3:
+                    temps_portion_tour_3 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 4
+
+                temps_portion_tour_4 = 0
+                for split in split_pour_graphe_pacing_tour_4:
+                    temps_portion_tour_4 += df_temps_de_ski.iloc[index_biathlete][split]
+
+                # tour 5
+
+                temps_portion_tour_5 = 0
+                for split in split_pour_graphe_pacing_tour_5:
+                    temps_portion_tour_5 += df_temps_de_ski.iloc[index_biathlete][split]
+    
+        # for index_biathlete in range(df_3_tours.shape[0]):
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,0])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,1])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,2])
             ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,3])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,4] - moyenne_des_5_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,5] - moyenne_des_5_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,6] - moyenne_des_5_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,7] - moyenne_des_5_tours)
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,8] - moyenne_des_5_tours)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_1 - temps_portion_tour_1)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_2 - temps_portion_tour_1)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_3 - temps_portion_tour_1)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_4 - temps_portion_tour_1)
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_5 - temps_portion_tour_1)
             
         fig5 = plt.figure()
         
@@ -231,16 +364,13 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots):
 
 
     plt.title("Pacing tour par tour")
-    # yticklabels = plt.gca().get_yticklabels()
-    # labels = [str(label.get_text()).replace('−', '-') + "s" if float(label.get_text().replace('−', '-')) != 0 else 0 for label in yticklabels]
-    # plt.gca().set_yticklabels(labels)
     plt.xticks(np.arange(nombre_de_shoots+1)+1, ["Tour " + str(i) for i in range(1, nombre_de_shoots+2)])
     plt.gca().spines['right'].set_visible(False)
     if nombre_de_shoots == 2:
        plt.xlim(0,4)    
     if nombre_de_shoots == 4:    
        plt.xlim(0,6)
-    y_max = max(abs(plt.ylim()[0]), abs(plt.ylim()[1]))
+    y_max = max(abs(plt.ylim()[0]-1), abs(plt.ylim()[1]+1))
     plt.ylim(-y_max,y_max)
     plt.grid()
     plt.tight_layout()

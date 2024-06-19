@@ -11,7 +11,325 @@ from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 from fonctions_utiles_code_plateforme import f_liste_distance_des_ST
 
 @st.cache_data()
-def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots):
+def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, numero_du_tour):
+    
+    ### REPERER L'ATHLETE AU MEILLEUR TEMPS DE SKI PAR SON DOSSARD
+    
+    df_sans_temps_shoot = f_df_sans_temps_shoot(df, nombre_de_shoots)[7]
+    
+    dossard_meilleur_skieur = df_sans_temps_shoot.loc[df_sans_temps_shoot["Finish"].idxmin(), "Bib"]
+    
+    # Boucle pour remettre les split time dans l'ordre s'ils sont mélangés dans la liste argument
+    
+    tous_les_ST = []
+    for splits_tour in split_tour_par_tour(df, nombre_de_shoots):
+        tous_les_ST += splits_tour    
+
+    split_time = []
+    for splits_tour in split_tour_par_tour(df, nombre_de_shoots):
+        split_time += splits_tour 
+
+    split_time = [split for split in split_time if split in liste_des_split_time]
+
+    noms_tour_1 = split_tour_par_tour(df, nombre_de_shoots)[0]
+    noms_tour_2 = split_tour_par_tour(df, nombre_de_shoots)[1]
+    noms_tour_3 = split_tour_par_tour(df, nombre_de_shoots)[2] 
+    if nombre_de_shoots == 4:
+        noms_tour_4 = split_tour_par_tour(df, nombre_de_shoots)[3]
+        noms_tour_5 = split_tour_par_tour(df, nombre_de_shoots)[4]
+    
+    nombre_de_ST = len(liste_des_split_time)
+    
+    indices_de_tous_les_ST = []
+    
+    for indice_split, split in enumerate(tous_les_ST):
+        for split_bis in liste_des_split_time:
+            if split == split_bis:
+                indices_de_tous_les_ST.append(indice_split)
+    
+    df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0].sort_values(by="Ranking") # 0 et pas -1
+
+    liste_pour_plot_en_abscisse = [0]
+    for index_split in range(nombre_de_ST):
+        if indices_de_tous_les_ST[0] == 0:
+            liste_pour_plot_en_abscisse.append(round(f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[2][indices_de_tous_les_ST[index_split]],1)) 
+        else:
+            liste_pour_plot_en_abscisse.append(round(liste_pour_plot_en_abscisse[-1] + f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[2][indices_de_tous_les_ST[index_split]] - f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[2][indices_de_tous_les_ST[index_split]-1],1)) 
+
+    # print("liste_pour_plot_en_abscisse: " + str(liste_pour_plot_en_abscisse))
+
+    for nom_colonne in df_temps_de_ski.columns.tolist()[4:]:
+        if nombre_de_shoots == 4:
+            if nom_colonne not in noms_tour_1 + noms_tour_2 + noms_tour_3 + noms_tour_4 + noms_tour_5:
+                df_temps_de_ski.drop(nom_colonne, axis=1, inplace=True)            
+        else:
+            if nom_colonne not in noms_tour_1 + noms_tour_2 + noms_tour_3:
+                df_temps_de_ski.drop(nom_colonne, axis=1, inplace=True)
+
+    # print(df_temps_de_ski)
+
+    df_analyse_portion_specifique = df_temps_de_ski.iloc[:, :4].copy()
+
+    for index_portion in range(nombre_de_ST):
+        df_analyse_portion_specifique[split_time[index_portion]] = df_temps_de_ski[liste_des_split_time[index_portion]]
+        
+    df_analyse_portion_specifique["Temps total"] = 0
+    for index_portion in range(nombre_de_ST):
+        df_analyse_portion_specifique["Temps total"] +=  df_temps_de_ski[liste_des_split_time[index_portion]]
+
+    fig_analyse_portion_specifique = plt.figure()
+    
+    df_analyse_portion_specifique.sort_values(by="Temps total", inplace=True)
+    df_analyse_portion_specifique.reset_index(inplace=True, drop=True)
+    
+    df_best_selected_athlete = df_analyse_portion_specifique[df_analyse_portion_specifique["Name"].isin(biathletes_a_afficher) | df_analyse_portion_specifique["Country"].isin(nationalites)]
+           
+    
+    ### SI MEILLEUR SKIEUR ###
+    
+ 
+    if affichage == "Athlète au meilleur temps de ski sur la course":
+        
+        best_skiier_row = df_analyse_portion_specifique[df_analyse_portion_specifique["Bib"] == dossard_meilleur_skieur]
+        
+        plt.plot(liste_pour_plot_en_abscisse, [0 for split in liste_pour_plot_en_abscisse], marker="*")
+        plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, 0, best_skiier_row.iloc[0, 2])# + " - meilleur temps de ski sur la course")
+        
+        for index_biathlete in range(0,df_best_selected_athlete.shape[0]):
+            if df_best_selected_athlete.iloc[index_biathlete, 2] in biathletes_a_afficher or df_best_selected_athlete.iloc[index_biathlete, 3] in nationalites:
+                if df_best_selected_athlete.iloc[index_biathlete, 2] == best_skiier_row.iloc[0, 2]:
+                    pass
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'FRA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="royalblue")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'GER':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'NOR':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'SWE':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'ITA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                else:
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+        
+        plt.title("Tour " + str(numero_du_tour))
+        plt.grid()
+        y_min = plt.ylim()[0]        
+        y_max = plt.ylim()[1]
+        if indices_de_tous_les_ST[0] == 0:
+            plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
+        else:
+            # print("split_time: " + str(split_time))
+            # print(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time)
+            plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
+
+    
+    ### SI MEILLEUR ATHLETE SELECTIONNE ### 
+    
+    
+    elif affichage == "Meilleur athlète sélectionné/e":
+        
+        plt.plot(liste_pour_plot_en_abscisse, [0 for split in liste_pour_plot_en_abscisse], marker="*")
+        plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, 0, df_best_selected_athlete.iloc[0, 2])
+        
+        for index_biathlete in range(1,df_best_selected_athlete.shape[0]):
+            if df_best_selected_athlete.iloc[index_biathlete, 2] in biathletes_a_afficher or df_best_selected_athlete.iloc[index_biathlete, 3] in nationalites:
+                
+                if df_best_selected_athlete.iloc[index_biathlete, 3] == 'FRA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="royalblue")       
+                    plt.text(liste_pour_plot_en_abscisse[-1], liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'GER':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'NOR':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'SWE':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'ITA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                
+                else:
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                        
+        plt.title("Tour " + str(numero_du_tour))
+        plt.grid()
+        y_min = plt.ylim()[0]        
+        y_max = plt.ylim()[1]
+        if indices_de_tous_les_ST[0] == 0:
+            plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
+        else:
+            plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
+        
+        
+        
+    ### SI SUPERMAN DE LA COURSE ###
+    
+        
+        
+    elif affichage == "Superman":
+        
+        meilleurs_temps_de_ski = []
+    
+        for intermediaire in df_analyse_portion_specifique.columns.tolist()[4:]:
+            meilleurs_temps_de_ski.append(df_analyse_portion_specifique[intermediaire].min())
+        
+        for index_biathlete in range(1,df_analyse_portion_specifique.shape[0]):
+            if df_analyse_portion_specifique.iloc[index_biathlete, 2] in biathletes_a_afficher or df_analyse_portion_specifique.iloc[index_biathlete, 3] in nationalites:
+                
+                if df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'FRA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="royalblue")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                
+                elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'GER':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                
+                elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'NOR':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                
+                elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'SWE':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                
+                elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'ITA':
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                
+                else:
+                    liste_ordonnee_biathlete = [0]
+                    for index in range(nombre_de_ST):
+                        temps_a_ajouter = liste_ordonnee_biathlete[-1]
+                        liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
+                    # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
+                    plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                        
+        plt.title("Tour " + str(numero_du_tour))
+        plt.grid()
+        y_min = plt.ylim()[0]        
+        y_max = plt.ylim()[1]
+        if indices_de_tous_les_ST[0] == 0:
+            plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
+        else:
+            plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
+        
+        
+    ### SI SUPERMAN DE LA PORTION SELECTIONNEE ###
+            
+        
+    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines['top'].set_visible(False)
+
+    
+    return fig_analyse_portion_specifique, y_min, y_max
+
+@st.cache_data()
+def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, numero_du_tour, limite_y_min, limite_y_max):
     
     ### REPERER L'ATHLETE AU MEILLEUR TEMPS DE SKI PAR SON DOSSARD
     
@@ -56,6 +374,8 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         else:
             liste_pour_plot_en_abscisse.append(round(liste_pour_plot_en_abscisse[-1] + f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[2][indices_de_tous_les_ST[index_split]] - f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[2][indices_de_tous_les_ST[index_split]-1],1)) 
 
+    # print("liste_pour_plot_en_abscisse: " + str(liste_pour_plot_en_abscisse))
+
     for nom_colonne in df_temps_de_ski.columns.tolist()[4:]:
         if nombre_de_shoots == 4:
             if nom_colonne not in noms_tour_1 + noms_tour_2 + noms_tour_3 + noms_tour_4 + noms_tour_5:
@@ -91,7 +411,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         best_skiier_row = df_analyse_portion_specifique[df_analyse_portion_specifique["Bib"] == dossard_meilleur_skieur]
         
         plt.plot(liste_pour_plot_en_abscisse, [0 for split in liste_pour_plot_en_abscisse], marker="*")
-        plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, 0, best_skiier_row.iloc[0, 2])# + " - meilleur temps de ski sur la course")
+        plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, 0, best_skiier_row.iloc[0, 2])# + " - meilleur temps de ski sur la course")
         
         for index_biathlete in range(0,df_best_selected_athlete.shape[0]):
             if df_best_selected_athlete.iloc[index_biathlete, 2] in biathletes_a_afficher or df_best_selected_athlete.iloc[index_biathlete, 3] in nationalites:
@@ -104,7 +424,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="royalblue")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'GER':
                     liste_ordonnee_biathlete = [0]
@@ -113,7 +433,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'NOR':
                     liste_ordonnee_biathlete = [0]
@@ -122,7 +442,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'SWE':
                     liste_ordonnee_biathlete = [0]
@@ -131,7 +451,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'ITA':
                     liste_ordonnee_biathlete = [0]
@@ -140,7 +460,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 else:
                     liste_ordonnee_biathlete = [0]
@@ -149,9 +469,9 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + best_skiier_row.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
-                        
-        plt.title("Evolution des écarts")
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+        
+        plt.title("Tour " + str(numero_du_tour))
         plt.grid()
         if indices_de_tous_les_ST[0] == 0:
             plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
@@ -188,7 +508,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'NOR':
                     liste_ordonnee_biathlete = [0]
@@ -197,7 +517,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'SWE':
                     liste_ordonnee_biathlete = [0]
@@ -206,7 +526,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 elif df_best_selected_athlete.iloc[index_biathlete, 3] == 'ITA':
                     liste_ordonnee_biathlete = [0]
@@ -215,7 +535,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                 
                 else:
                     liste_ordonnee_biathlete = [0]
@@ -224,9 +544,9 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + df_best_selected_athlete.iloc[0, 4 + index] - df_best_selected_athlete.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_best_selected_athlete.iloc[index_biathlete, 2])
                         
-        plt.title("Evolution des écarts")
+        plt.title("Tour " + str(numero_du_tour))
         plt.grid()
         if indices_de_tous_les_ST[0] == 0:
             plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
@@ -256,7 +576,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="royalblue")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                 
                 elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'GER':
                     liste_ordonnee_biathlete = [0]
@@ -265,7 +585,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="black")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                 
                 elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'NOR':
                     liste_ordonnee_biathlete = [0]
@@ -274,7 +594,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="red")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                 
                 elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'SWE':
                     liste_ordonnee_biathlete = [0]
@@ -283,7 +603,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gold")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                 
                 elif df_analyse_portion_specifique.iloc[index_biathlete, 3] == 'ITA':
                     liste_ordonnee_biathlete = [0]
@@ -292,7 +612,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="limegreen")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                 
                 else:
                     liste_ordonnee_biathlete = [0]
@@ -301,9 +621,9 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
                         liste_ordonnee_biathlete.append(temps_a_ajouter + meilleurs_temps_de_ski[index] - df_analyse_portion_specifique.iloc[index_biathlete, 4 + index]) # 4 + 1 + index pour commencer à 6 pour index 0
                     # print(str(liste_pour_plot_en_abscisse) + " et " + str(liste_ordonnee_biathlete))
                     plt.plot(liste_pour_plot_en_abscisse, liste_ordonnee_biathlete, marker="o", color="gray")       
-                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.1, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
+                    plt.text(liste_pour_plot_en_abscisse[-1] + 0.01, liste_ordonnee_biathlete[-1], df_analyse_portion_specifique.iloc[index_biathlete, 2])
                         
-        plt.title("Evolution des écarts")
+        plt.title("Tour " + str(numero_du_tour))
         plt.grid()
         if indices_de_tous_les_ST[0] == 0:
             plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
@@ -316,9 +636,10 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
+    plt.ylim(limite_y_min, limite_y_max)
     
     return fig_analyse_portion_specifique
-        
+
 @st.cache_data()
 def analyse_portion_specifique_ratio_individuel(df, top_n, split_amont, nationalites_a_afficher, biathletes_a_afficher, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots): 
     
@@ -485,7 +806,7 @@ def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_
                 plt.ylim(min_value -2, max_value + 2)
         
         plt.grid(True, axis='y', linewidth=0.2, color="grey")    
-        plt.title(intermediate, fontsize=10)
+        plt.title(intermediaire_a_afficher, fontsize=10)
         plt.ylabel('Chronos (s)')#, fontsize=10)
         plt.xticks(np.arange(df_moy_3_tours_filtered.shape[0]),[str(df_moy_3_tours_filtered["Ranking"][i]) + " - " + df_moy_3_tours_filtered["Name"][i] for i in range(df_moy_3_tours_filtered.shape[0])], rotation=90, fontsize=8)
         # plt.xticks(np.arange(df_moy_3_tours_filtered.shape[0]), df_moy_3_tours_filtered['Name'].unique(), rotation=90, fontsize=8)

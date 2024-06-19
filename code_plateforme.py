@@ -19,6 +19,7 @@ from fonctions_utiles_code_plateforme import *
 from fonctions_gestion_session_state_plateforme import *
 
 from extraction_time_plateforme import time_data_to_excel
+from extraction_data_fis import extraction_data_fis
 
 
 ### CONFIGURATION DE LA PAGE ###
@@ -75,10 +76,10 @@ with onglets[5]:
     col_1_Jonas, col_2_Jonas, col_3_Jonas, col_4_Jonas= st.columns(4)
     
     with col_1_Jonas: # sport
-        choix_sport_temporary_jonas = st.selectbox("Discipline", ["Biathlon"], key="choix_sport_Jonas", on_change=off_button_click_jonas)
+        choix_sport_temporary_jonas = st.selectbox("Discipline", ["Biathlon", "Ski de fond"], key="choix_sport_Jonas", on_change=off_button_click_jonas)
 
 
-    with col_2_Jonas: # saison
+    with col_2_Jonas: # 
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_3_Jonas: # lieu de la course
@@ -234,26 +235,32 @@ with onglets[0]:
     col1, col2, col3, col4= st.columns(4)
 
     with col1: # sport
-        choix_sport_temporary = st.selectbox("Discipline", ["Biathlon"]) #["Biathlon", "Ski de fond"])
-
-    with col2: # saison
-        choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
-
-    with col3: # lieu de la course
-        choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)"], on_change=on_selectbox_change)
-    
-    if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
+        choix_sport_temporary = st.selectbox("Discipline", ["Biathlon", "Ski de fond"]) #["Biathlon", "Ski de fond"])
+        with col2: # saison
+            choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
+            
+    if choix_sport_temporary == "Biathlon":
+        with col3: # lieu de la course
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)"], on_change=on_selectbox_change)
+        
+        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
+            with col4: # type de la course
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
+        
+        elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
+            with col4: # type de la course
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
+        
+        else: # dans le cas où c'est Antholz
+            with col4: # type de la course
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)      
+    else:
+        with col3: # lieu de la course
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Davos (SUI)"], on_change=on_selectbox_change)
+        
         with col4: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
-    
-    elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
-        with col4: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
-    
-    else: # dans le cas où c'est Antholz
-        with col4: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)      
-     
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20.0 km Pursuit Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
+        
     if "Men" in choix_type_de_la_course_temporary:
         choix_homme_ou_femme = "homme"
     elif "Women" in choix_type_de_la_course_temporary:
@@ -272,8 +279,12 @@ with onglets[0]:
     # Création du bouton pour valider les choix
         
     # chemin_fichier_excel = f"jesptri\\Analyse_de_course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
-    chemin_fichier_excel = f"{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
+    if choix_sport_temporary == "Ski de fond":
+        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary} _{choix_saison_temporary}.xlsx"
+    else:
+        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
 
+    print("chemin_fichier_excel: " + str(chemin_fichier_excel))
     
     file_path = Path(chemin_fichier_excel)
     
@@ -296,17 +307,7 @@ with onglets[0]:
         message_placeholder = st.empty()  
         
     dictionnaire_course_liste_st = load_split_list(csv_st_file_path_split)
-                
-    # if not st.session_state.button_clicked:
-    #     with onglets[1]:
-    #         st.subheader("**Sélectionnez une course et validez !**")
-    #     with onglets[2]:
-    #         st.subheader("**Sélectionnez une course et validez !**")
-    #     with onglets[3]:
-    #         st.subheader("**Sélectionnez une course et validez !**")
-    #     with onglets[4]:
-    #         st.subheader("**Sélectionnez une course et validez !**")
-        
+                        
     choix_saison = choix_saison_temporary
     choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
     choix_type_de_la_course = choix_type_de_la_course_temporary
@@ -369,41 +370,62 @@ with onglets[0]:
         choix_type_de_la_course = choix_type_de_la_course_temporary
         choix_sport = choix_sport_temporary
 
+        # print("choix_type_de_la_course: " + str(extract_distances(choix_type_de_la_course)))
+        
         distance_toute_la_course = float(extract_distances(choix_type_de_la_course)[0])
         distance_de_1_tour = float(extract_distances(choix_type_de_la_course)[0])/(nombre_de_shoots+1)
 
 
         df = pd.read_excel(chemin_fichier_excel, engine='openpyxl')
-
+        
+        print("df: " + str(df))
 
 
         # ### TOUS LES NOMS D'INTERMEDIAIRES ###
 
+        # print(df)
 
+        # print("split_tour_par_tour(df, nombre_de_shoots): " + str(split_tour_par_tour(df, nombre_de_shoots)))
+        # print("cacaprout: " + str(split_tour_par_tour_ski_de_fond(df, 2)))
         noms_intermediaires = [] 
-        for index_split, split in enumerate(split_tour_par_tour(df, nombre_de_shoots)[0]):
-            if index_split == 0:        
-                noms_intermediaires.append("Départ - " + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split]) + "  ||  Shooting 1 - " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split]) + "  ||  Shooting 2 - " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split]))
-            else:
-                noms_intermediaires.append(str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split]))
+        if choix_sport == "Biathlon":
+            for index_split, split in enumerate(split_tour_par_tour(df, nombre_de_shoots)[0]):
+                if index_split == 0:        
+                    noms_intermediaires.append("Départ - " + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split]) + "  ||  Shooting 1 - " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split]) + "  ||  Shooting 2 - " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split]))
+                else:
+                    noms_intermediaires.append(str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split]))
 
-        noms_des_PT = indices_ST_PT_tours(df)[0]
-        noms_des_ST = indices_ST_PT_tours(df)[1]
-        noms_des_tours = indices_ST_PT_tours(df)[2]
-        
-        split_time_a_afficher_un_par_un = []
-        for splits_tour in split_tour_par_tour(df, nombre_de_shoots):
-            split_time_a_afficher_un_par_un += splits_tour 
+            split_du_tour_1 = split_tour_par_tour(df, nombre_de_shoots)[0]
+            split_du_tour_2 = split_tour_par_tour(df, nombre_de_shoots)[1]
+            split_du_tour_3 = split_tour_par_tour(df, nombre_de_shoots)[2]
 
-        # print("indices des PT: " + str(indices_ST_PT_tours(df)[0]))
-        # print("indices des ST: " + str(indices_ST_PT_tours(df)[1]))
-        # print("indices des tours: " + str(indices_ST_PT_tours(df)[2]))       
+            if nombre_de_shoots == 4:
+                split_du_tour_4 = split_tour_par_tour(df, nombre_de_shoots)[3]
+                split_du_tour_5 = split_tour_par_tour(df, nombre_de_shoots)[4]
 
-            
-            # st.caption("Mettre une portion dans une seule catégorie")       
+            split_time_a_afficher_un_par_un = []
+            for splits_tour in split_tour_par_tour(df, nombre_de_shoots):
+                split_time_a_afficher_un_par_un += splits_tour 
+            dico_noms_dashboard_noms_code = {noms_intermediaires[i]: split_tour_par_tour(df, nombre_de_shoots)[0][i] for i in range(len(noms_intermediaires))}
+
                 
+        else: # cas ou c'est le ski de fond qui est choisi
+            nombre_de_tours = 2
+            for index_split, split in enumerate(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0]):
+                if index_split == 0:        
+                    noms_intermediaires.append("Départ - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split]) + "  ||  " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_shoots)[1][index_split]))
+                else:
+                    noms_intermediaires.append(str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split]) + "  ||  " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1][index_split-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1][index_split]))
 
-        dico_noms_dashboard_noms_code = {noms_intermediaires[i]: split_tour_par_tour(df, nombre_de_shoots)[0][i] for i in range(len(noms_intermediaires))}
+            split_du_tour_1 = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0]
+            split_du_tour_2 = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1]
+
+            split_time_a_afficher_un_par_un = []
+            for splits_tour in split_tour_par_tour_ski_de_fond(df, nombre_de_tours):
+                split_time_a_afficher_un_par_un += splits_tour   
+            dico_noms_dashboard_noms_code = {noms_intermediaires[i]: split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][i] for i in range(len(noms_intermediaires))}
+            liste_distance_des_ST = extraction_data_fis(df)[1]
+
 
         ### TOUS LES NOMS DES ATHLETES ###
 
@@ -432,42 +454,43 @@ with onglets[0]:
             with col_biathletes_1:
                 biathletes_1 = st.multiselect("Biathlètes:", all_athletes, key="biathletes superman")
             with col_chronos_1:
-                chronos_1 = st.multiselect("Données chronométriques:", ["Début/fin de tour", "Pre-time", "Split-time"])
+                chronos_1 = st.selectbox("Données chronométriques:", ["Sans range time", "Avec range time"])
                 
-            with st.container(height=650):
-                col_ecart_au_leader, col_superman = st.columns(2)
+            if chronos_1 == "Sans range time":
+                avec_range_time_ou_pas = False
+            else:
+                avec_range_time_ou_pas = True
+                
+            # with st.container(height=650):
+            col_ecart_au_leader, col_superman = st.columns(2)
 
             ## GRAPHE 1 ## ### COLONNE ECART AU LEADER ###
 
             with col_ecart_au_leader:
                 st.markdown("### Ecart au meilleur skieur")
-                if nombre_de_shoots == 2:
-                    indices_a_enlever = [f_df_sans_temps_shoot(df, nombre_de_shoots)[3], f_df_sans_temps_shoot(df, nombre_de_shoots)[4]]
-                elif nombre_de_shoots == 4:
-                    indices_a_enlever = [f_df_sans_temps_shoot(df, nombre_de_shoots)[3], f_df_sans_temps_shoot(df, nombre_de_shoots)[4], f_df_sans_temps_shoot(df, nombre_de_shoots)[8], f_df_sans_temps_shoot(df, nombre_de_shoots)[9]]
-                
+                if choix_sport == "Biathlon":
+                    if nombre_de_shoots == 2:
+                        indices_a_enlever = [f_df_sans_temps_shoot(df, nombre_de_shoots)[3], f_df_sans_temps_shoot(df, nombre_de_shoots)[4]]
+                    elif nombre_de_shoots == 4:
+                        indices_a_enlever = [f_df_sans_temps_shoot(df, nombre_de_shoots)[3], f_df_sans_temps_shoot(df, nombre_de_shoots)[4], f_df_sans_temps_shoot(df, nombre_de_shoots)[8], f_df_sans_temps_shoot(df, nombre_de_shoots)[9]]
+                        fig_ecart_leader = graphes_superman_et_ecart_au_leader(f_df_sans_temps_shoot(df, nombre_de_shoots)[0], f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[1], df, 
+                                                indices_a_enlever, top_n_1, nationalites_1, 
+                                                np.arange(df.shape[1]-4)[:-1],
+                                                biathletes_1, nombre_de_shoots, avec_range_time_ou_pas, choix_sport,f_df_sans_temps_shoot(df, nombre_de_shoots)[-1])[0]
+                    # with st.container(height=500):
+                else:
+                    fig_ecart_leader = graphes_superman_et_ecart_au_leader_ski_de_fond(df, f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[1], top_n_1, nationalites_1, biathletes_1)[0]
                 # print("indices: " + str(np.arange(df.shape[1]-4)[:-1]))
-                
-                fig_ecart_leader = graphes_superman_et_ecart_au_leader(f_df_sans_temps_shoot(df, nombre_de_shoots)[0], f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[1], df, 
-                                                        indices_a_enlever, choix_homme_ou_femme, top_n_1, nationalites_1, 
-                                                        np.arange(df.shape[1]-4)[:-1],
-                                                        biathletes_1, nombre_de_shoots)[0]
-                # with st.container(height=500):
                 st.pyplot(fig_ecart_leader)
+
                 
             ## GRAPHE 2 ## ### COLONNE SUPERMAN ###
 
             with col_superman:
                 st.markdown("### Superman")
-                fig_ecart_leader = graphes_superman_et_ecart_au_leader(f_df_sans_temps_shoot(df, nombre_de_shoots)[0], f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[1], df, 
-                                                        indices_a_enlever, 
-                                                        choix_homme_ou_femme, 
-                                                        top_n_1, 
-                                                        nationalites_1, 
-                                                        np.arange(df.shape[1]-4)[:-1], 
-                                                        biathletes_1, nombre_de_shoots)[1]
-                # with st.container(height=500):
-                st.pyplot(fig_ecart_leader)
+                fig_superman = graphes_superman_et_ecart_au_leader_ski_de_fond(df, f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course)[1], top_n_1, nationalites_1, biathletes_1)[1]
+                
+                st.pyplot(fig_superman)
 
             ## GRAPHE 3 ## ### PORTIONS CREANT DE L'ECART ###
             
@@ -495,13 +518,14 @@ with onglets[0]:
 
             # col_top_n_2, _, col_biathletes_2 = st.columns([5,0.25,5])            
             
-            col_temps_de_ski_total_temps_de_ski_par_tour, _, col_pacing_tour_par_tour, _, col_tableau_temps_de_ski  = st.columns([4,0.2,4,0.6,2.6])
+            col_temps_de_ski_total_temps_de_ski_par_tour, _, col_pacing_tour_par_tour, _   = st.columns([4,1,4,1])
 
             with col_temps_de_ski_total_temps_de_ski_par_tour:
                 top_n_2 = st.slider("Top ...", min_value=0, max_value=75, value=10, key="top n 2")
                 st.info("Les biathlètes sont ordonnés par le classement de la course, les français sont placés sur la droite.")
             with col_pacing_tour_par_tour:
                 biathletes_2 = st.multiselect("Biathlètes:", all_athletes, key="biathlètes 2")
+                split_a_afficher_pacing_tour_par_tour = st.multiselect("Split time à afficher: ", split_du_tour_1)
                 st.info("Ligne à 0=moyenne des 3 tours pour chaque biathlète. Les tours ne font pas exactement la même distance...")
 
 
@@ -510,19 +534,21 @@ with onglets[0]:
 
 
 
-            fig_temps_de_ski_total, fig_temps_de_ski_par_tour, _, _, fig_pacing_tour_par_tour = graphes_VTT(df, choix_homme_ou_femme, top_n_2, biathletes_2, nombre_de_shoots)
+            fig_temps_de_ski_total, fig_temps_de_ski_par_tour, _, _, fig_pacing_tour_par_tour = graphes_VTT(df, choix_homme_ou_femme, top_n_2, biathletes_2, nombre_de_shoots, split_a_afficher_pacing_tour_par_tour)
 
 
 
             with col_temps_de_ski_total_temps_de_ski_par_tour:
-                with st.container(height=700):
-                    st.pyplot(fig_temps_de_ski_total)
-                    st.pyplot(fig_temps_de_ski_par_tour)
+                # with st.container(height=700):
+                st.pyplot(fig_temps_de_ski_total)
+                    # st.pyplot(fig_temps_de_ski_par_tour)
             with col_pacing_tour_par_tour:
                 st.pyplot(fig_pacing_tour_par_tour)
                 
-            with col_tableau_temps_de_ski:
-                st.subheader("Classement par temps de ski:")
+            with st.sidebar:
+                st.write("Classement de la course:")
+                st.dataframe(tableau_ranking_course(df),hide_index=True)                
+                st.write("Classement par temps de ski:")
                 st.dataframe(tableau_temps_de_ski(df, nombre_de_shoots),hide_index=True)
 
 
@@ -561,60 +587,109 @@ with onglets[0]:
             
             st.header("Analyse de portion spécifique")
             
-            col_partie_gauche, col_partie_droite = st.columns([8,8])
-            
-            with col_partie_gauche:
-                st.subheader("Zoom sur le superman")
-                with st.expander("Choix des données zoom sur le superman"):
-                    col_biathletes_superman_agrandi_indiv, col_biathletes_superman_agrandi_nationalites = st.columns([4,3])
-                    col_split_time_portion_specifique_indiv, col_comment_afficher = st.columns([4,3])
+            st.subheader("Zoom sur le superman")
+            col_biathletes_superman_agrandi_indiv, col_biathletes_superman_agrandi_nationalites = st.columns([4,3])
+            col_split_time_portion_specifique_indiv, col_comment_afficher = st.columns([4,3])
                 
-            with col_partie_droite:
-                st.subheader("Une seule portion")  
-                with st.expander("Choix des données une seule portion"):
-                    col_top_N_une_seule_portion_indiv, col_biathletes_une_seule_portion_indiv, col_nationalites_une_seule_portion_indiv = st.columns([2,3,3])
-                    # col_portion_une_seule_portion = st.columns(1)  
-                    intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires)          
-            
+         
+    
             
             with col_split_time_portion_specifique_indiv:
-                split_time = st.multiselect("Split time à afficher:", split_time_a_afficher_un_par_un)
-                st.write("_Sélectionnzr un split-time, la portion étudiée sera: split-time d'avant -> split-time choisi._")
-                
+                split_time_superman_agrandi_tour_1_indiv = st.multiselect("Split time à afficher:", split_du_tour_1)
+                st.write("_Sélectionner un split-time, la portion étudiée sera: split-time d'avant -> split-time choisi._")
+
             with col_comment_afficher:
                 affichage = ["Athlète au meilleur temps de ski sur la course", "Meilleur athlète sélectionné/e", "Superman"]
                 affichage_arg = st.selectbox("Affichage:", affichage)
                 st.write("_Ecarts à l'athlète le plus rapide sur la course, au superman ou au meilleur athlète choisi._")        
             
-            col_graphes_1, _, col_graphes_2 = st.columns([7,1,8])
 
-                
-            
+            col_zoom_tour_1, col_zoom_tour_2, col_zoom_tour_3 = st.columns(3)
+
+
             with col_biathletes_superman_agrandi_indiv:
                 biathletes_3 = st.multiselect("Biathlètes:", all_athletes, key="biathlètes 3")
             with col_biathletes_superman_agrandi_nationalites:
                 nationalites_3 = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalités 3")    
+                
+            if len(split_time_superman_agrandi_tour_1_indiv) == 0:
+                with col_split_time_portion_specifique_indiv:
+                    st.warning("**⚠️ Sélectionnez les split-time à afficher ⚠️**")
+            elif len(biathletes_3) == 0 and len(nationalites_3) == 0:
+                with col_split_time_portion_specifique_indiv:
+                    st.warning("**⚠️ Sélectionnez un/e athlète ou une nationalité à afficher ⚠️**")                        
+            else:
+                liste_pour_plot_3_tours = []
+                for index_split, split in enumerate(split_time_superman_agrandi_tour_1_indiv):
+                    for index_split_bis, split_bis in enumerate(split_du_tour_1):
+                        if split == split_bis:
+                            liste_pour_plot_3_tours.append(index_split_bis)
+                split_time_superman_agrandi_tour_2_indiv = []
+                for indice in liste_pour_plot_3_tours:
+                    split_time_superman_agrandi_tour_2_indiv.append(split_du_tour_2[indice])  
+                split_time_superman_agrandi_tour_3_indiv = []
+                for indice in liste_pour_plot_3_tours:
+                    split_time_superman_agrandi_tour_3_indiv.append(split_du_tour_3[indice])
+                if nombre_de_shoots == 4:
+                    split_time_superman_agrandi_tour_4_indiv = []
+                    for indice in liste_pour_plot_3_tours:
+                        split_time_superman_agrandi_tour_4_indiv.append(split_du_tour_4[indice]) 
+                        split_time_superman_agrandi_tour_5_indiv = []
+                        for indice in liste_pour_plot_3_tours:
+                            split_time_superman_agrandi_tour_5_indiv.append(split_du_tour_5[indice])
+
+                liste_y_min = []
+                liste_y_max = []
+                liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_1_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_2_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_3_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                
+                liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_1_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
+                liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_2_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
+                liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_3_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
+
+                if nombre_de_shoots == 4:
+                    liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_4_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                    liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_4_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
+                    liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_5_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                    liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_5_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
+                    # print("tour 4: " + str())
+
+                max_min_en_absolu = max(max([abs(x) for x in liste_y_max]),abs(max([abs(x) for x in liste_y_min])))
+
+                with col_zoom_tour_1:
+                    fig_superman_agrandi_tour_1 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_1_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, -max_min_en_absolu, max_min_en_absolu)
+                    st.pyplot(fig_superman_agrandi_tour_1)   
+                    with col_zoom_tour_2:    
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_2_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 2, -max_min_en_absolu, max_min_en_absolu)
+                            st.pyplot(fig_superman_agrandi_tour_2)   
+                    with col_zoom_tour_3:
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_3_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 3, -max_min_en_absolu, max_min_en_absolu)
+                            st.pyplot(fig_superman_agrandi_tour_2)   
+                    if nombre_de_shoots == 4:
+                        with col_zoom_tour_1:     
+                            fig_superman_agrandi_tour_4 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_4_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 4, -max_min_en_absolu, max_min_en_absolu)
+                            st.pyplot(fig_superman_agrandi_tour_4)   
+                        with col_zoom_tour_2:
+                            fig_superman_agrandi_tour_5 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time_superman_agrandi_tour_5_indiv, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 5, -max_min_en_absolu, max_min_en_absolu)
+                            st.pyplot(fig_superman_agrandi_tour_5) 
+
+                
+
+            st.subheader("Une seule portion")  
+            col_top_N_une_seule_portion_indiv, col_biathletes_une_seule_portion_indiv, col_nationalites_une_seule_portion_indiv = st.columns([2,3,3])
+            # col_portion_une_seule_portion = st.columns(1)  
+            intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires) 
+                
             with col_top_N_une_seule_portion_indiv:
                 top_n_unique_portion = st.slider("Top ...", min_value=1, max_value=75, value=10, key="top N 3")    
             with col_biathletes_une_seule_portion_indiv:
                 biathletes_une_seule_portion_individuel = st.multiselect("Biathlètes:", all_athletes, key="biathletes 4")
             with col_nationalites_une_seule_portion_indiv:
                 nationalites_une_seule_portion_individuel = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalites 4")        
-        
-            with col_graphes_2:        
-                st.pyplot(analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_a_afficher, biathletes_une_seule_portion_individuel, nationalites_une_seule_portion_individuel,top_n_unique_portion, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots))      
-                
-                
-            with col_graphes_1:
-                if len(split_time) == 0:
-                    st.warning("**⚠️ Sélectionnez les split-time à afficher ⚠️**")
-                elif len(biathletes_3) == 0 and len(nationalites_3) == 0:
-                    st.warning("**⚠️ Sélectionnez un/e athlète ou une nationalité à afficher ⚠️**")                        
-                else:
-                    fig_superman_agrandi = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_time, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots)
-                    st.pyplot(fig_superman_agrandi)         
-                
-                
+              
+            st.pyplot(analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_a_afficher, biathletes_une_seule_portion_individuel, nationalites_une_seule_portion_individuel,top_n_unique_portion, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots))      
+
                 
                 
             st.header("Analyse par type de portion")
@@ -656,39 +731,38 @@ with onglets[0]:
                 
                 
             st.header("Analyse glisse")              
-            with st.expander("L'analyse de la glisse est prévue pour les circuits comportant des descentes séparées en deux portions, si c'est le cas pour la course sélectionnée cliquez dessus !"):
                 
-                st.info("**_Choisir la portion 1, la portion 2 sera automatiquement la portion qui suit. Le graphe représente le ratio entre la vitesse moyenne sur la portion 2 et la vitesse moyenne sur la portion 1._**" + "  \n" + "_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale, il a été plus efficace._")
-                
-                # st.write("Comment comprendre cette figure ?", key="comprendre la glisse individuel")
-                # st.info("_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale, il a été plus efficace._")
+            st.info("**_Choisir la portion 1, la portion 2 sera automatiquement la portion qui suit. Le graphe représente le ratio entre la vitesse moyenne sur la portion 2 et la vitesse moyenne sur la portion 1._**" + "  \n" + "_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale, il a été plus efficace._")
+            
+            # st.write("Comment comprendre cette figure ?", key="comprendre la glisse individuel")
+            # st.info("_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale, il a été plus efficace._")
 
-                col_top_n_ratio_indiv, col_top_n_split_amont_indiv, col_biathletes_ratio_indiv, col_nationalites_ratio_indiv = st.columns(4)
+            col_top_n_ratio_indiv, col_top_n_split_amont_indiv, col_biathletes_ratio_indiv, col_nationalites_ratio_indiv = st.columns(4)
+            
+            with col_top_n_ratio_indiv:
+                top_n_ratio_indiv = st.slider("Top ...", min_value=1, max_value=75, value=10, key="top N 6")
+            with col_top_n_split_amont_indiv:
+                split_amont_ratio_indiv = st.multiselect("Portion 1:", noms_intermediaires)
+            with col_biathletes_ratio_indiv:
+                biathletes_a_afficher = st.multiselect("Biathlètes:", all_athletes, key="biathletes 6")
+            with col_nationalites_ratio_indiv:
+                nationalites_a_afficher = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalites 6")
                 
-                with col_top_n_ratio_indiv:
-                    top_n_ratio_indiv = st.slider("Top ...", min_value=1, max_value=75, value=10, key="top N 6")
-                with col_top_n_split_amont_indiv:
-                    split_amont_ratio_indiv = st.multiselect("Portion 1:", noms_intermediaires)
-                with col_biathletes_ratio_indiv:
-                    biathletes_a_afficher = st.multiselect("Biathlètes:", all_athletes, key="biathletes 6")
-                with col_nationalites_ratio_indiv:
-                    nationalites_a_afficher = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalites 6")
-                    
-                # print("split_amont sans modification: " + str(split_amont))
+            # print("split_amont sans modification: " + str(split_amont))
 
-                # print("split_amont après modification: " + str(split_amont))
+            # print("split_amont après modification: " + str(split_amont))
+            
+            _, col_ratio_indiv, _ = st.columns([2,6,2])
+            
+            with col_ratio_indiv:
+                if len(split_amont_ratio_indiv) == 0:
+                    st.warning("**⚠️ Sélectionnez UN SEUL split-time à afficher ⚠️**")
+                elif len(split_amont_ratio_indiv) > 1:
+                    st.warning("**⚠️ Sélectionnez UN SEUL split-time à afficher ⚠️**")
+                else:  
+                    split_amont_ratio_indiv = dico_noms_dashboard_noms_code[split_amont_ratio_indiv[0]]         
+                    st.pyplot(analyse_portion_specifique_ratio_individuel(df, top_n_ratio_indiv,  split_amont_ratio_indiv, nationalites_a_afficher, biathletes_a_afficher, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots))
                 
-                _, col_ratio_indiv, _ = st.columns([2,6,2])
-                
-                with col_ratio_indiv:
-                    if len(split_amont_ratio_indiv) == 0:
-                        st.warning("**⚠️ Sélectionnez UN SEUL split-time à afficher ⚠️**")
-                    elif len(split_amont_ratio_indiv) > 1:
-                        st.warning("**⚠️ Sélectionnez UN SEUL split-time à afficher ⚠️**")
-                    else:  
-                        split_amont_ratio_indiv = dico_noms_dashboard_noms_code[split_amont_ratio_indiv[0]]         
-                        st.pyplot(analyse_portion_specifique_ratio_individuel(df, top_n_ratio_indiv,  split_amont_ratio_indiv, nationalites_a_afficher, biathletes_a_afficher, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots))
-                    
                     
                     
             st.header("Analyse de toutes les portions")
@@ -720,24 +794,23 @@ with onglets[0]:
 
             col_nb_FRA, col_nb_NOR, col_nb_GER, col_nb_SWE, col_nb_ITA = st.columns(5)
             with col_nb_FRA:
-                nombre_FRA = st.selectbox("FRA", [1,2,3,4,5])
+                nombre_FRA = st.selectbox("FRA", [1,2,3,4,5], index=2)
             with col_nb_NOR:
-                nombre_NOR = st.selectbox("NOR", [1,2,3,4,5])
+                nombre_NOR = st.selectbox("NOR", [1,2,3,4,5], index=2)
             with col_nb_GER:
-                nombre_GER = st.selectbox("GER", [1,2,3,4,5])
+                nombre_GER = st.selectbox("GER", [1,2,3,4,5], index=2)
             with col_nb_SWE:
-                nombre_SWE = st.selectbox("SWE", [1,2,3,4,5])
+                nombre_SWE = st.selectbox("SWE", [1,2,3,4,5], index=2)
             with col_nb_ITA:
-                nombre_ITA = st.selectbox("ITA", [1,2,3,4,5])  
+                nombre_ITA = st.selectbox("ITA", [1,2,3,4,5], index=2)  
             
             col_portion_specifique_nationalite, _, col_une_seule_portion_nationalite = st.columns([6,1,6])
             
             with col_portion_specifique_nationalite:
                 st.subheader("Analyse de portion spécifique")
-                with st.expander("Choix des données à afficher"):
-                    nationalites = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalités superman agrandi par nationalité")
-                    split_time = st.multiselect("Split time à afficher:", split_time_a_afficher_un_par_un, key="split time portion spécifique nationalité")
-                    st.info("**_Sélectionnez un split-time, la portion ajoutée sera: split-time d'avant -> split-time choisi._**")
+                nationalites = st.multiselect("Nationalités:", ["FRA", "NOR", "GER", "SWE", "ITA"], key="nationalités superman agrandi par nationalité")
+                split_time = st.multiselect("Split time à afficher:", split_time_a_afficher_un_par_un, key="split time portion spécifique nationalité")
+                st.info("**_Sélectionnez un split-time, la portion ajoutée sera: split-time d'avant -> split-time choisi._**")
                 
                 if len(split_time) == 0:
                     st.warning("**⚠️ Sélectionnez les split-time à afficher ⚠️**")        
@@ -779,31 +852,29 @@ with onglets[0]:
 
 
             st.subheader("Analyse glisse")
-            
-            with st.expander("L'analyse de la glisse est prévue pour les circuits comportant des descentes séparées en deux portions, si c'est le cas pour la course sélectionnée cliquez dessus !"):
-            
-                st.info("**_Choisir la portion 1, la portion 2 sera automatiquement la portion qui suit. Le graphe représente le ratio entre la vitesse moyenne sur la portion 2 et la vitesse moyenne sur la portion 1._**" + "  \n" + "_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale._")
-                # st.write("**_Comment comprendre cette figure ?_**", key="comprendre la glisse individuel")
-                # st.write("_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale._")
-                    
-                col_split_amont_ratio_nationalite, col_nb_FRA, col_nb_NOR, col_nb_GER, col_nb_SWE, col_nb_ITA = st.columns(6)
-                
-                # with col_split_amont_ratio_nationalite:   
-                split_amont_ratio_nationalite = st.selectbox("Portion 1", noms_intermediaires)
                         
+            st.info("**_Choisir la portion 1, la portion 2 sera automatiquement la portion qui suit. Le graphe représente le ratio entre la vitesse moyenne sur la portion 2 et la vitesse moyenne sur la portion 1._**" + "  \n" + "_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale._")
+            # st.write("**_Comment comprendre cette figure ?_**", key="comprendre la glisse individuel")
+            # st.write("_Plus la barre est haute, plus l'athlète a conservé/augmenté sa vitesse initiale._")
+                
+            col_split_amont_ratio_nationalite, col_nb_FRA, col_nb_NOR, col_nb_GER, col_nb_SWE, col_nb_ITA = st.columns(6)
+            
+            # with col_split_amont_ratio_nationalite:   
+            split_amont_ratio_nationalite = st.selectbox("Portion 1", noms_intermediaires)
+                    
 
-                _, col_ratio_nationalites, _ = st.columns([4,6,4])
-                    
-                    
-                with col_ratio_nationalites:
-                    # if len(split_amont_ratio_nationalite) == 0:
-                    #     st.write("**⚠️ Veuillez sélectionnez UN SEUL split-time à afficher ⚠️**")
-                    # elif len(split_amont_ratio_nationalite) > 1:
-                    #     st.write("**⚠️ Veuillez sélectionnez UN SEUL split-time à afficher ⚠️**")
-                    # else:     
-                    split_amont_ratio_nationalite = dico_noms_dashboard_noms_code[split_amont_ratio_nationalite] 
-                    fig_ratio_par_nationalite = analyse_portion_specifique_ratio_nationalite(df, split_amont_ratio_nationalite, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
-                    st.pyplot(fig_ratio_par_nationalite)
+            _, col_ratio_nationalites, _ = st.columns([4,6,4])
+                
+                
+            with col_ratio_nationalites:
+                # if len(split_amont_ratio_nationalite) == 0:
+                #     st.write("**⚠️ Veuillez sélectionnez UN SEUL split-time à afficher ⚠️**")
+                # elif len(split_amont_ratio_nationalite) > 1:
+                #     st.write("**⚠️ Veuillez sélectionnez UN SEUL split-time à afficher ⚠️**")
+                # else:     
+                split_amont_ratio_nationalite = dico_noms_dashboard_noms_code[split_amont_ratio_nationalite] 
+                fig_ratio_par_nationalite = analyse_portion_specifique_ratio_nationalite(df, split_amont_ratio_nationalite, nombre_FRA, nombre_NOR, nombre_GER, nombre_SWE, nombre_ITA, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
+                st.pyplot(fig_ratio_par_nationalite)
 
 
             ### TOUTES LES PORTIONS PAR NATIONALITE ###

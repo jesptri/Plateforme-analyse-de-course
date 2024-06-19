@@ -497,8 +497,8 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
             print("endroit 3")
             
         if SPLIT_TIME[i] == SPLIT_TIME[-2]: # -2 et pas -1 pour bug
-            df_final["Ranking"] = new_good_data["Ranking"]
-                # df_final = df_final.merge(new_good_data[['Bib', 'Ranking']], on='Bib', how='left')
+            # df_final["Ranking"] = new_good_data["Ranking"]
+            df_final = df_final.merge(new_good_data[['Bib', 'Ranking']], on='Bib', how='left')
 
         if SPLIT_TIME[-2] == SPLIT_TIME[i]:
             print("endroit 4")

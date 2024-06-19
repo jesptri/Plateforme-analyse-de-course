@@ -13,7 +13,7 @@ def graphes_moustaches(df, noms_intermediaires, nationalites, sexe, distance_de_
     
     df_moy_3_tours.sort_values(by="Ranking").reset_index(drop=True, inplace=True)
 
-    print("df_moy_3_tours: " + str(df_moy_3_tours))
+    # print("df_moy_3_tours: " + str(df_moy_3_tours))
     
     # meilleurs_chronos = []
     # for intermediaire in df_moy_3_tours.columns.tolist()[4:]:
