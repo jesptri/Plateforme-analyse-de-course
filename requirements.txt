@@ -4,3 +4,4 @@ streamlit
 selenium
 numpy
 openpyxl
+pdfplumber
