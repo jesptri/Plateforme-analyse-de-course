@@ -1,11 +1,8 @@
 import numpy as np
 import pandas as pd
-import zipfile
 import streamlit as st 
 import os
 from pathlib import Path
-import csv
-import json
 
 nombre_de_tours = 2
 

@@ -46,9 +46,9 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
             if df_temps_de_ski.iloc[index_biathlete]["Ranking"] <= top_n or df_temps_de_ski.iloc[index_biathlete]["Country"] in nationalites_a_afficher or df_temps_de_ski.iloc[index_biathlete]["Name"] in biathletes:
                     
                 chronos_par_biathlete = []
-                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete][1])
-                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete][2])
-                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete][3])
+                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete,1])
+                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete,2])
+                chronos_par_biathlete.append(df_temps_de_ski.iloc[index_biathlete,3])
                 ecart_grandissant = 0
                 for index_intermediaire in range(len(df_temps_de_ski.columns.to_list()[4:])):
                     # print(index_intermediaire, len(liste_des_meilleurs_chronos), df_temps_de_ski.columns.to_list()[4:])
