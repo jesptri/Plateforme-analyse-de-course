@@ -5,6 +5,8 @@ import streamlit as st
 
 from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 from fonctions_utiles_code_plateforme import split_tour_par_tour
+from fonctions_utiles_code_plateforme import split_tour_par_tour_ski_de_fond
+from fonctions_utiles_code_plateforme import df_temps_de_ski_ski_de_fond
 
 # df = pd.read_excel("c:\\Users\\jules\\Desktop\\Stage CNSNMM\\Analyse de course\\Lenzerheide\\ST sprint femmes.xlsx", sheet_name='ST Lenzerheide')
 
@@ -27,9 +29,12 @@ def tableau_ranking_course(df):
     return df_tableau
 
 @st.cache_data()
-def tableau_temps_de_ski(df, nombre_de_shoots):
-    df_sans_temps_shoot = f_df_sans_temps_shoot(df, nombre_de_shoots)[7]
-    df_sans_temps_shoot = df_sans_temps_shoot.sort_values(by="Finish")
+def tableau_temps_de_ski(df, nombre_de_shoots, sport):
+    if sport == "Biathlon":
+        df_sans_temps_shoot = f_df_sans_temps_shoot(df, nombre_de_shoots)[7]
+        df_sans_temps_shoot = df_sans_temps_shoot.sort_values(by="Finish")
+    else:
+        df_sans_temps_shoot = df.copy()
     
     colonnes_a_copier = ["Ranking", "Name", "Finish"]
     
@@ -47,7 +52,6 @@ def tableau_temps_de_ski(df, nombre_de_shoots):
     df_tableau.at[0, "Ski time"] = str(int(df_tableau.at[0, "Ski time"]/60)) + "'" + str(int(df_tableau.at[0, "Ski time"]%60)) + "s"
     
     return df_tableau
-
 
 st.cache_data()
 def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_pour_graphe_pacing_tour_1):
@@ -169,61 +173,42 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
     
     ### PACING TOUR PAR TOUR ###
     
-    ecarts_X_tours = [[] for _ in range(df_3_tours.shape[0])]
+    ecarts_X_tours = [[] for _ in range(df_3_tours_not_filtered.shape[0])]
     
     if nombre_de_shoots == 2:
 
         tous_les_split = split_tour_par_tour(df, nombre_de_shoots)[0] + split_tour_par_tour(df, nombre_de_shoots)[1] + split_tour_par_tour(df, nombre_de_shoots)[2]
 
-        index_des_split_choisis = []
-
-        for split in split_pour_graphe_pacing_tour_1:
-            for index_split_bis, split_bis in enumerate(tous_les_split):
-                if split == split_bis:
-                    index_des_split_choisis.append(index_split_bis)
-
-        # tour 2
-
-        split_pour_graphe_pacing_tour_2 = []
-
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_2.append(split_tour_par_tour(df, nombre_de_shoots)[1][index])
-
-        # tour 3
-
-        split_pour_graphe_pacing_tour_3 = []
-
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_3.append(split_tour_par_tour(df, nombre_de_shoots)[2][index])
-
+        for index_split, split in enumerate(tous_les_split):
+            if split_pour_graphe_pacing_tour_1 == split:
+                index_du_split_choisi = index_split
+        
         df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0]
+        
+        for index_biathlete in range(df_3_tours_not_filtered.shape[0]):
+            
+            if split_pour_graphe_pacing_tour_1 not in ["Tir","Tour complet"]:
+                split_pour_graphe_pacing_tour_2 = split_tour_par_tour(df, nombre_de_shoots)[1][index_du_split_choisi]
+                split_pour_graphe_pacing_tour_3 = split_tour_par_tour(df, nombre_de_shoots)[2][index_du_split_choisi]
+                
+                temps_portion_tour_1 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_1]
+                temps_portion_tour_2 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_2]
+                temps_portion_tour_3 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_3]
 
-        for index_biathlete in range(df_3_tours.shape[0]):
-            for split in split_pour_graphe_pacing_tour_1:
-
-                # tour 1
-
-                temps_portion_tour_1 = 0
-                for split in split_pour_graphe_pacing_tour_1:
-                    temps_portion_tour_1 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 2
-
-                temps_portion_tour_2 = 0
-                for split in split_pour_graphe_pacing_tour_2:
-                    temps_portion_tour_2 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 3
-
-                temps_portion_tour_3 = 0
-                for split in split_pour_graphe_pacing_tour_3:
-                    temps_portion_tour_3 += df_temps_de_ski.iloc[index_biathlete][split]
-
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,0])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,1])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,2])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,3])
-            ecarts_X_tours[index_biathlete].append(temps_portion_tour_1 - temps_portion_tour_1) # 2ème terme = pour avoir le premier tour comme référence 
+            elif split_pour_graphe_pacing_tour_1 == "Tour complet":
+                temps_portion_tour_1 = df.iloc[index_biathlete]["Shooting 1"]
+                temps_portion_tour_2 = df.iloc[index_biathlete]["Shooting 2"] - df.iloc[index_biathlete]["Shooting 1"]
+                temps_portion_tour_5 = df.iloc[index_biathlete]["Finish"] - df.iloc[index_biathlete]["Shooting 2"]
+            else: # dans le cas où c'est le tir
+                temps_portion_tour_1 = df.iloc[index_biathlete]["Shooting 1"] - df.iloc[index_biathlete]["→ Shooting 1"]
+                temps_portion_tour_2 = df.iloc[index_biathlete]["Shooting 2"] - df.iloc[index_biathlete]["→ Shooting 2"]
+                temps_portion_tour_3 = temps_portion_tour_1
+                                
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,0])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,1])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,2])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,3])
+            ecarts_X_tours[index_biathlete].append(temps_portion_tour_1 - temps_portion_tour_1)
             ecarts_X_tours[index_biathlete].append(temps_portion_tour_2 - temps_portion_tour_1)
             ecarts_X_tours[index_biathlete].append(temps_portion_tour_3 - temps_portion_tour_1)
                                 
@@ -256,80 +241,42 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
 
         tous_les_split = split_tour_par_tour(df, nombre_de_shoots)[0] + split_tour_par_tour(df, nombre_de_shoots)[1] + split_tour_par_tour(df, nombre_de_shoots)[2] + split_tour_par_tour(df, nombre_de_shoots)[3] + split_tour_par_tour(df, nombre_de_shoots)[4]
 
-        index_des_split_choisis = []
-
-        for split in split_pour_graphe_pacing_tour_1:
-            for index_split_bis, split_bis in enumerate(tous_les_split):
-                if split == split_bis:
-                    index_des_split_choisis.append(index_split_bis)
-
-        # tour 2
-
-        split_pour_graphe_pacing_tour_2 = []
-
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_2.append(split_tour_par_tour(df, nombre_de_shoots)[1][index])
-
-        # tour 3
-
-        split_pour_graphe_pacing_tour_3 = []
-
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_3.append(split_tour_par_tour(df, nombre_de_shoots)[2][index])
- 
-        # tour 4
-
-        split_pour_graphe_pacing_tour_4 = []
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_4.append(split_tour_par_tour(df, nombre_de_shoots)[3][index])
-
-        # tour 5
-
-        split_pour_graphe_pacing_tour_5 = []
-
-        for index in index_des_split_choisis:
-            split_pour_graphe_pacing_tour_5.append(split_tour_par_tour(df, nombre_de_shoots)[4][index])
-
+        for index_split, split in enumerate(tous_les_split):
+            if split_pour_graphe_pacing_tour_1 == split:
+                index_du_split_choisi = index_split
+        
         df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0]
-
-        for index_biathlete in range(df_3_tours.shape[0]):
-            for split in split_pour_graphe_pacing_tour_1:
-
-                # tour 1
-
-                temps_portion_tour_1 = 0
-                for split in split_pour_graphe_pacing_tour_1:
-                    temps_portion_tour_1 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 2
-
-                temps_portion_tour_2 = 0
-                for split in split_pour_graphe_pacing_tour_2:
-                    temps_portion_tour_2 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 3
-
-                temps_portion_tour_3 = 0
-                for split in split_pour_graphe_pacing_tour_3:
-                    temps_portion_tour_3 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 4
-
-                temps_portion_tour_4 = 0
-                for split in split_pour_graphe_pacing_tour_4:
-                    temps_portion_tour_4 += df_temps_de_ski.iloc[index_biathlete][split]
-
-                # tour 5
-
-                temps_portion_tour_5 = 0
-                for split in split_pour_graphe_pacing_tour_5:
-                    temps_portion_tour_5 += df_temps_de_ski.iloc[index_biathlete][split]
-    
-        # for index_biathlete in range(df_3_tours.shape[0]):
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,0])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,1])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,2])
-            ecarts_X_tours[index_biathlete].append(df_3_tours.iloc[index_biathlete,3])
+        
+        for index_biathlete in range(df_3_tours_not_filtered.shape[0]):
+            
+            if split_pour_graphe_pacing_tour_1 not in ["Tir","Tour complet"]:
+                split_pour_graphe_pacing_tour_2 = split_tour_par_tour(df, nombre_de_shoots)[1][index_du_split_choisi]
+                split_pour_graphe_pacing_tour_3 = split_tour_par_tour(df, nombre_de_shoots)[2][index_du_split_choisi]
+                split_pour_graphe_pacing_tour_4 = split_tour_par_tour(df, nombre_de_shoots)[3][index_du_split_choisi]
+                split_pour_graphe_pacing_tour_5 = split_tour_par_tour(df, nombre_de_shoots)[4][index_du_split_choisi]
+                
+                temps_portion_tour_1 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_1]
+                temps_portion_tour_2 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_2]
+                temps_portion_tour_3 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_3]
+                temps_portion_tour_4 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_4]
+                temps_portion_tour_5 = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tour_5]
+            elif split_pour_graphe_pacing_tour_1 == "Tour complet":
+                temps_portion_tour_1 = df.iloc[index_biathlete]["Shooting 1"]
+                temps_portion_tour_2 = df.iloc[index_biathlete]["Shooting 2"] - df.iloc[index_biathlete]["Shooting 1"]
+                temps_portion_tour_3 = df.iloc[index_biathlete]["Shooting 3"] - df.iloc[index_biathlete]["Shooting 2"]
+                temps_portion_tour_4 = df.iloc[index_biathlete]["Shooting 4"] - df.iloc[index_biathlete]["Shooting 3"]
+                temps_portion_tour_5 = df.iloc[index_biathlete]["Finish"] - df.iloc[index_biathlete]["Shooting 4"]
+            else: # dans le cas où c'est le tir
+                temps_portion_tour_1 = df.iloc[index_biathlete]["Shooting 1"] - df.iloc[index_biathlete]["→ Shooting 1"]
+                temps_portion_tour_2 = df.iloc[index_biathlete]["Shooting 2"] - df.iloc[index_biathlete]["→ Shooting 2"]
+                temps_portion_tour_3 = df.iloc[index_biathlete]["Shooting 3"] - df.iloc[index_biathlete]["→ Shooting 3"]
+                temps_portion_tour_4 = df.iloc[index_biathlete]["Shooting 4"] - df.iloc[index_biathlete]["→ Shooting 4"]
+                temps_portion_tour_5 = temps_portion_tour_1
+                                
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,0])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,1])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,2])
+            ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,3])
             ecarts_X_tours[index_biathlete].append(temps_portion_tour_1 - temps_portion_tour_1)
             ecarts_X_tours[index_biathlete].append(temps_portion_tour_2 - temps_portion_tour_1)
             ecarts_X_tours[index_biathlete].append(temps_portion_tour_3 - temps_portion_tour_1)
@@ -377,3 +324,147 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
     # plt.show()
     
     return fig1, fig2, fig3, fig4, fig5
+
+st.cache_data()
+def graphes_VTT_ski_de_fond(df, sexe, top_n, biathletes_a_afficher, nombre_de_tours, split_pour_graphe_pacing_tour_1):
+    
+    if top_n < 25:
+        police = 10
+    elif top_n >= 25 and top_n < 45:
+        police = 8
+    elif top_n >= 45 and top_n <= 55:
+        police = 6
+    else:
+        police = 4
+    
+    df_3_tours = df.iloc[:, :4].copy()
+    
+    df_3_tours["Temps tour 1"] = df[split_tour_par_tour_ski_de_fond(df,nombre_de_tours)[0][-1]]
+    for numero_tour in range(1, nombre_de_tours):
+        df_3_tours["Temps tour " + str(numero_tour+1)] = df[split_tour_par_tour_ski_de_fond(df,nombre_de_tours)[numero_tour][-1]] - df[split_tour_par_tour_ski_de_fond(df,nombre_de_tours)[numero_tour-1][-1]]
+    df_3_tours["Temps total"] = 0
+    for numero_tour in range(nombre_de_tours):
+        df_3_tours["Temps total"] += df_3_tours["Temps tour " + str(numero_tour+1)]
+    
+    df_3_tours = df_3_tours.sort_values(by="Ranking")
+        
+    df_3_tours_not_filtered = df_3_tours.copy()
+    
+    df_3_tours = df_3_tours[(df_3_tours["Ranking"] <= top_n) | (df_3_tours["Country"] == "FRA") | df_3_tours["Name"].isin(biathletes_a_afficher)] 
+    df_3_tours = df_3_tours.reset_index(drop=True)
+    
+    fig1 = plt.figure()
+    
+
+    ### TROUVER LE MEILLEUR TEMPS DE SKI TOTAL ###
+    
+    
+    chrono_meilleur_temps_de_ski = df_3_tours_not_filtered["Temps total"].min()
+
+
+    ### TEMPS DE SKI TOTAL ###
+
+    for index_biathlete in range(df_3_tours.shape[0]):
+        chrono_ordonnee = - chrono_meilleur_temps_de_ski
+        for numero_tour in range(nombre_de_tours):
+            chrono_ordonnee += df_3_tours.iloc[index_biathlete, 4 + numero_tour]
+        if df_3_tours.iloc[index_biathlete, 3] == "FRA":
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="blue")
+        elif df_3_tours.iloc[index_biathlete, 3] == "GER":
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="black")
+        elif df_3_tours.iloc[index_biathlete, 3] == "NOR":
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="red")
+        elif df_3_tours.iloc[index_biathlete, 3] == "SWE":
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="orange")
+        elif df_3_tours.iloc[index_biathlete, 3] == "ITA":
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="green")
+        else:
+            plt.scatter(index_biathlete+1, chrono_ordonnee, color="grey")
+
+    # plt.scatter(np.arange(df_3_tours.shape[0])+1, df_3_tours.iloc[:, 5] + df_3_tours.iloc[:, 6] + df_3_tours.iloc[:, 7])
+    labels = ["+" + str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
+    plt.gca().set_yticklabels(labels)
+    plt.xticks(np.arange(df_3_tours.shape[0])+1, [str(df_3_tours.iloc[i, 0]) + " - " + df_3_tours.iloc[i, 2] for i in range(df_3_tours.shape[0])], rotation=90, fontsize=police)
+    plt.grid(linestyle='--', linewidth=0.5)
+    plt.title("Temps de ski total (retard au meilleur temps)")
+    plt.tight_layout()
+
+    
+    ### PACING TOUR PAR TOUR ###
+    
+    ecarts_X_tours = [[] for _ in range(df_3_tours_not_filtered.shape[0])]
+    
+    tous_les_split = []
+    for numero_tour in range(nombre_de_tours):
+        tous_les_split += split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[numero_tour]
+        
+    for index_split, split in enumerate(tous_les_split):
+        if split_pour_graphe_pacing_tour_1 == split:
+            index_du_split_choisi = index_split
+
+    split_pour_graphe_pacing_tous_les_tours = [[] for _ in range(nombre_de_tours)]
+    split_pour_graphe_pacing_tous_les_tours[0] = split_pour_graphe_pacing_tour_1
+
+    # print("split_tour_par_tour_ski_de_fond(df, nombre_de_tours): " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)))
+    if split_pour_graphe_pacing_tour_1 != "Tour complet":
+        for numero_tour in range(1,nombre_de_tours):
+            split_pour_graphe_pacing_tous_les_tours[numero_tour] = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[numero_tour][index_du_split_choisi]
+
+    df_temps_de_ski = df_temps_de_ski_ski_de_fond(df)
+
+    for index_biathlete in range(df_3_tours_not_filtered.shape[0]):
+        
+        ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,0])
+        ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,1])
+        ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,2])
+        ecarts_X_tours[index_biathlete].append(df_3_tours_not_filtered.iloc[index_biathlete,3])
+
+        temps_portion_tous_les_tours = []
+        
+        for numero_tour in range(nombre_de_tours):
+            temps_portion_tour = 0
+            if split_pour_graphe_pacing_tour_1 == "Tour complet":
+                temps_portion_tour = df_temps_de_ski.iloc[index_biathlete][split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[numero_tour][-1]]                         
+            else:    
+                temps_portion_tour = df_temps_de_ski.iloc[index_biathlete][split_pour_graphe_pacing_tous_les_tours[numero_tour]]
+            temps_portion_tous_les_tours.append(temps_portion_tour)
+        
+        for numero_tour in range(nombre_de_tours):
+            ecarts_X_tours[index_biathlete].append(temps_portion_tous_les_tours[numero_tour] - temps_portion_tous_les_tours[0]) # 2ème terme = pour avoir le premier tour comme référence 
+
+        fig5 = plt.figure()
+        
+    for biathlete in biathletes_a_afficher:
+        for index_biathlete in range(len(ecarts_X_tours)):
+            if ecarts_X_tours[index_biathlete][2] == biathlete:
+                if ecarts_X_tours[index_biathlete][3] == "FRA":                   
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "royalblue", marker="o")
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])
+                elif ecarts_X_tours[index_biathlete][3] == "NOR":
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "red", marker="o")
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])
+                elif ecarts_X_tours[index_biathlete][3] == "GER":
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "black", marker="o")
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])
+                elif ecarts_X_tours[index_biathlete][3] == "SWE":
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "gold", marker="o")
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])
+                elif ecarts_X_tours[index_biathlete][3] == "ITA":
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "limegreen", marker="o")
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])
+                else:
+                    plt.plot(np.arange(1,nombre_de_tours+1), ecarts_X_tours[index_biathlete][4:], "gray", marker="o")      
+                    plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])          
+
+    plt.title("Pacing tour par tour")
+    plt.xticks(np.arange(nombre_de_tours+1)+1, ["Tour " + str(i) for i in range(1, nombre_de_tours+2)])
+    plt.gca().spines['right'].set_visible(False)
+    plt.xlim(0,nombre_de_tours+1)
+    y_max = max(abs(plt.ylim()[0]-1), abs(plt.ylim()[1]+1))
+    plt.ylim(-y_max,y_max)
+    plt.grid()
+    plt.tight_layout()
+    # plt.show()
+    
+    return fig1, fig5
+

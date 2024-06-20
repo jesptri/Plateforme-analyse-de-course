@@ -629,6 +629,8 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
                 plt.plot(liste_distance_au_depart_des_ST_pour_plot, chronos_superman_biathletes[index_biathlete][3:], color='limegreen', linewidth=1.2)
                 plt.text(liste_distance_au_depart_des_ST_pour_plot[-1] + 0.1, chronos_superman_biathletes[index_biathlete][-1], chronos_superman_biathletes[index_biathlete][1], fontsize=8, va='center')
         else:
+            # print("ABSCISSE: " + str(liste_distance_au_depart_des_ST_pour_plot))
+            # print("ORDONNEE: " + str(chronos_superman_biathletes[index_biathlete][3:]))
             plt.plot(liste_distance_au_depart_des_ST_pour_plot, chronos_superman_biathletes[index_biathlete][3:], color='lightgray', linewidth=0.4)
 
     plt.axhline(y=0, color='black', linewidth=0.1)#, alpha=0.25)
@@ -636,6 +638,9 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
     plt.grid(True, color='black', linestyle = '--', linewidth=0.05)
     # print("liste_distance_au_depart_des_ST_pour_plot: " + str(liste_distance_au_depart_des_ST_pour_plot))
     # print("nom_abscisse_pour_plot: " + str(nom_abscisse_pour_plot))
+    
+    print("nom abscisse: " + str(liste_distance_au_depart_des_ST_pour_plot))
+    print("nom ordonnée: " + str(nom_abscisse_pour_plot))
     
     plt.xticks(liste_distance_au_depart_des_ST_pour_plot, nom_abscisse_pour_plot, rotation=90, fontsize=fontize_xticks)
             
