@@ -1845,8 +1845,10 @@ def analyse_une_seule_portion_nationalites_ski_de_fond(df, noms_intermediaires, 
     # plt.suptitle("Chronos moyens top 10 et français")
     
     nationalites = ["FRA", "NOR", "GER", "SWE", "ITA", "FIN", "USA", "SUI"]
-    couleurs = ["royalblue", "red", "black", "gold", "limegreen", "grey", "grey", "grey"]
-
+    couleurs = ["royalblue", "red", "black", "gold", "limegreen", "white", "blue", "white"]
+    edgecolor = ["royalblue","red","black","gold","limegreen","blue","red","red"]
+    hatch = ["", "", "", "", "", '//', "*", ""]
+    
     for intermediate in noms_intermediaires:
         
         if intermediate == intermediaire_a_afficher:
@@ -1876,7 +1878,7 @@ def analyse_une_seule_portion_nationalites_ski_de_fond(df, noms_intermediaires, 
                     
                 chronos_pour_plot_intermediaire.append(df_nat_boucle[intermediate].mean())
         
-            plt.bar(np.arange(len(nationalites)), chronos_pour_plot_intermediaire, color=couleurs)
+            plt.bar(np.arange(len(nationalites)), chronos_pour_plot_intermediaire, color=couleurs, edgecolor=edgecolor, hatch=hatch)
             
             min_value = min(chronos_pour_plot_intermediaire)
             max_value = max(chronos_pour_plot_intermediaire)
@@ -2032,8 +2034,10 @@ def analyse_portion_specifique_ratio_nationalite_ski_de_fond(df, split_amont, no
 
     ### NATIONALITE ###
 
-    nationalites_interessantes = ["FRA", "NOR", "GER", "SWE", "ITA", "USA", "FIN", "SUI"]
-    couleurs = ["royalblue", "red", "black", "gold", "limegreen", "grey", "grey", "grey"]
+    nationalites_interessantes = ["FRA", "NOR", "GER", "SWE", "ITA", "FIN", "USA", "SUI"]
+    couleurs = ["royalblue", "red", "black", "gold", "limegreen", "white", "blue", "white"]
+    edgecolor = ["royalblue","red","black","gold","limegreen","blue","red","red"]
+    hatch = ["", "", "", "", "", '//', "*", ""]
     
     ratios_pour_plot = []
 
@@ -2068,7 +2072,7 @@ def analyse_portion_specifique_ratio_nationalite_ski_de_fond(df, split_amont, no
      
     fig_ratio_nationalites = plt.figure()
     
-    plt.bar(np.arange(len(nationalites_interessantes)), ratios_pour_plot, color = couleurs)
+    plt.bar(np.arange(len(nationalites_interessantes)), ratios_pour_plot, color=couleurs, edgecolor=edgecolor, hatch=hatch)
 
     plt.xticks(np.arange(len(nationalites_interessantes)), nationalites_interessantes)
     plt.title("Vitesse moyenne portion 2 % vitesse moyenne portion 1")
