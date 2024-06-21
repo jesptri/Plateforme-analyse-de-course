@@ -52,9 +52,9 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     service = Service(PATH)
     
     edge_options = Options()
-    # edge_options.add_argument('--headless')
-    # edge_options.add_argument('--no-sandbox')
-    # edge_options.add_argument('--disable-dev-shm-usage')
+    edge_options.add_argument('--headless')
+    edge_options.add_argument('--no-sandbox')
+    edge_options.add_argument('--disable-dev-shm-usage')
 
     # Initialisation du WebDriver
     service = Service(PATH)
