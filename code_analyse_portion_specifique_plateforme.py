@@ -16,7 +16,7 @@ from fonctions_utiles_code_plateforme import f_liste_distance_des_ST_ski_de_fond
 from fonctions_utiles_code_plateforme import df_temps_de_ski_ski_de_fond
 
 @st.cache_data()
-def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, numero_du_tour, sport, nombre_de_tours):
+def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, sport, nombre_de_tours, numero_du_tour):
     
     ### REPERER L'ATHLETE AU MEILLEUR TEMPS DE SKI PAR SON DOSSARD
     
@@ -49,7 +49,7 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
     
     noms_de_tous_les_splits = []
     if sport == "Biathlon":
-        for numero_du_tour in range(nombre_de_tours):
+        for numero_du_tour in range(nombre_de_shoots+1):
             noms_de_tous_les_splits += split_tour_par_tour(df, nombre_de_shoots)[numero_du_tour]
     else:
         for numero_du_tour in range(nombre_de_tours):
@@ -69,7 +69,7 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
         df_temps_de_ski = f_df_sans_temps_shoot(df, nombre_de_shoots)[0].sort_values(by="Ranking") # 0 et pas -1
     else:
         df_temps_de_ski = df_temps_de_ski_ski_de_fond(df).sort_values(by="Ranking")
-
+        
     liste_pour_plot_en_abscisse = [0]
     if sport == "Biathlon":
         for index_split in range(nombre_de_ST):
@@ -83,21 +83,23 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
                 liste_pour_plot_en_abscisse.append(round(f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[0][indices_de_tous_les_ST[index_split]],1)) 
             else:
                 liste_pour_plot_en_abscisse.append(round(liste_pour_plot_en_abscisse[-1] + f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[0][indices_de_tous_les_ST[index_split]] - f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[0][indices_de_tous_les_ST[index_split]-1],1)) 
-         
-
-
-    # print("liste_pour_plot_en_abscisse: " + str(liste_pour_plot_en_abscisse))
-
+    
+    print("noms_de_tous_les_splits: " + str(noms_de_tous_les_splits))
+    
     for nom_colonne in df_temps_de_ski.columns.tolist()[4:]:
         if nom_colonne not in noms_de_tous_les_splits:
-                df_temps_de_ski.drop(nom_colonne, axis=1, inplace=True)            
-
-
-    # print(df_temps_de_ski)
+                df_temps_de_ski.drop(nom_colonne, axis=1, inplace=True)     
+                
+    print("df_temps_de_ski: " + str(df_temps_de_ski))       
 
     df_analyse_portion_specifique = df_temps_de_ski.iloc[:, :4].copy()
 
     for index_portion in range(nombre_de_ST):
+        # df_analyse_portion_specifique[split_time[index_portion]] = 0
+        # print("df_analyse_portion_specifique: " + str(df_analyse_portion_specifique))
+        # print("split_time[index_portion]: " + str(split_time[index_portion]))
+        # print("df_temps_de_ski: " + str(df_temps_de_ski))
+        # print("liste_des_split_time[index_portion]: " + str(liste_des_split_time[index_portion]))
         df_analyse_portion_specifique[split_time[index_portion]] = df_temps_de_ski[liste_des_split_time[index_portion]]
         
     df_analyse_portion_specifique["Temps total"] = 0
@@ -356,7 +358,7 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
     return fig_analyse_portion_specifique, y_min, y_max
 
 @st.cache_data()
-def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, numero_du_tour, limite_y_min, limite_y_max, sport, nombre_de_tours):
+def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites, liste_des_split_time, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, limite_y_min, limite_y_max, sport, nombre_de_tours, numero_du_tour):
     
     ### REPERER L'ATHLETE AU MEILLEUR TEMPS DE SKI PAR SON DOSSARD
     
@@ -389,7 +391,7 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
     
     noms_de_tous_les_splits = []
     if sport == "Biathlon":
-        for numero_du_tour in range(nombre_de_tours):
+        for numero_du_tour in range(nombre_de_shoots+1):
             noms_de_tous_les_splits += split_tour_par_tour(df, nombre_de_shoots)[numero_du_tour]
     else:
         for numero_du_tour in range(nombre_de_tours):
@@ -724,6 +726,7 @@ def analyse_portion_specifique_ratio_individuel(df, top_n, split_amont, national
         vitesse_portion_1 = distance_portion_amont/df_descente.iloc[index_biathlete,4]
         vitesse_portion_2 = distance_portion_aval/df_descente.iloc[index_biathlete,5]
         
+        
         if df_descente.iloc[index_biathlete,3] == "FRA":
             plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, color="royalblue")
         elif df_descente.iloc[index_biathlete,3] == "NOR":
@@ -734,6 +737,12 @@ def analyse_portion_specifique_ratio_individuel(df, top_n, split_amont, national
             plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, color="black")
         elif df_descente.iloc[index_biathlete,3] == "ITA":
             plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, color="limegreen")
+        elif df_descente.iloc[index_biathlete,3] == "FIN":
+            plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, edgecolor='blue', color='white', hatch=['//'])
+        elif df_descente.iloc[index_biathlete,3] == "USA":
+            plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, edgecolor='red', color='blue', hatch=["*"])
+        elif df_descente.iloc[index_biathlete,3] == "SUI":
+            plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, edgecolor='red', color='white')
         else:
             plt.bar(index_biathlete,vitesse_portion_2/vitesse_portion_1, color="gray")
 
@@ -898,6 +907,12 @@ def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_
                     plt.bar(index_biathlete, valeur_ordonnee, color='gold')
                 elif df_filtered.iloc[index_biathlete]["Country"] == "ITA":
                     plt.bar(index_biathlete, valeur_ordonnee, color='limegreen')
+                elif df_filtered.iloc[index_biathlete]["Country"] == "FIN":
+                    plt.bar(index_biathlete, valeur_ordonnee, edgecolor='blue', color='white', hatch=['//'])
+                elif df_filtered.iloc[index_biathlete]["Country"] == "USA":
+                    plt.bar(index_biathlete, valeur_ordonnee, edgecolor='red', color='blue', hatch=["*"])
+                elif df_filtered.iloc[index_biathlete]["Country"] == "SUI":
+                    plt.bar(index_biathlete, valeur_ordonnee, edgecolor='red', color='white')
                 else:
                     plt.bar(index_biathlete, valeur_ordonnee, color='lightgray')
 
@@ -930,6 +945,12 @@ def analyse_une_seule_portion_individuel(df, noms_intermediaires, intermediaire_
                     plt.bar(index_biathlete, biathlete_data[intermediate].values, color='gold')
                 elif biathlete_data.iloc[0]["Country"] == "ITA":
                     plt.bar(index_biathlete, biathlete_data[intermediate].values, color='limegreen')
+                elif biathlete_data.iloc[0]["Country"] == "FIN":
+                    plt.bar(index_biathlete, biathlete_data[intermediate].values, edgecolor='blue', color='white', hatch=['//'])
+                elif biathlete_data.iloc[0]["Country"] == "USA":
+                    plt.bar(index_biathlete, biathlete_data[intermediate].values, edgecolor='red', color='blue', hatch=["*"])
+                elif biathlete_data.iloc[0]["Country"] == "SUI":
+                    plt.bar(index_biathlete, biathlete_data[intermediate].values, edgecolor='red', color='white')
                 else:
                     plt.bar(index_biathlete, biathlete_data[intermediate].values, color='lightgray')
 

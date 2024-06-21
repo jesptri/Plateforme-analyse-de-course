@@ -103,11 +103,9 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
                 del(chronos_biathlete[indice_colonne_shoot_4-3])              
         
         ###  AU-DESSUS ###  EN REGARDANT LES CHRONOS J'AI VU QU'IL FALLAIT METTRE - 1 CAR UN PALIER ETAIT PRESENT AU DEBUT DU TOUR 3 POUR LES HOMMES ET LES FEMMES ###
+        
     for chronos_biathlete in chronos_superman_biathletes:       
         chronos_biathlete.insert(3,0)
-    # print("chronos_superman_biathletes[0]: " + str(chronos_superman_biathletes[0]))
-        
-    # print(chronos_superman_biathletes[17])
     
     nom_abscisse = df_temps_de_ski.columns.tolist()[4:]
 
@@ -140,7 +138,6 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
             nom_abscisse_pour_plot[nom_abscisse_pour_plot.index("Shooting 4")] = "Après shoot 4"
 
     liste_distance_au_depart_des_ST_pour_plot = liste_distance_au_depart_des_ST.copy()
-    # print("taille abscisse début superman: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
     
     if not avec_range:
         if nombre_de_shoots == 4:
@@ -149,16 +146,7 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
         
         liste_distance_au_depart_des_ST_pour_plot.remove(liste_distance_au_depart_des_ST_pour_plot[indices_a_enlever[1]-4])
         liste_distance_au_depart_des_ST_pour_plot.remove(liste_distance_au_depart_des_ST_pour_plot[indices_a_enlever[0]-4])
-    liste_distance_au_depart_des_ST_pour_plot.insert(0,0)
-    
-    print("liste_distance_au_depart_des_ST_pour_plot: " + str(liste_distance_au_depart_des_ST_pour_plot))
-    print("taille de liste_distance_au_depart_des_ST_pour_plot: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
-    
-
-    # print("taille abscisse superman: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
-    # print("taille ordonnée superman: " + str(len(chronos_superman_biathletes[0])))
-    # print("ordonnée superman: " + str(chronos_superman_biathletes[0]))
-    
+    liste_distance_au_depart_des_ST_pour_plot.insert(0,0)    
 
     ### PLOT ECART A LA PREMIERE EN TEMPS REEL ###
 
@@ -329,15 +317,15 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
     plt.axhline(y=0, color='black', linewidth=0.1)#, alpha=0.25)
     plt.title("Ecart au superman (en secondes)", fontsize=12)
     plt.grid(True, color='black', linestyle = '--', linewidth=0.05)
-    # print("liste_distance_au_depart_des_ST_pour_plot: " + str(liste_distance_au_depart_des_ST_pour_plot))
-    # print("nom_abscisse_pour_plot: " + str(nom_abscisse_pour_plot))
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
     
     plt.xticks(liste_distance_au_depart_des_ST_pour_plot, nom_abscisse_pour_plot, rotation=90, fontsize=fontize_xticks)
             
     xtick_labels = plt.xticks()[1]
     for i, label in enumerate(xtick_labels):
-        # print(label.get_text())
-        if label.get_text() in ["Entrée pas de tir 1","Entrée pas de tir 2","Entrée pas de tir 3","Entrée pas de tir 4","Sortie pas de tir 1","Sortie pas de tir 2","Sortie pas de tir 3","Sortie pas de tir 4"]:
+        if label.get_text() in ["Entrée pas de tir 1","Entrée pas de tir 2","Entrée pas de tir 3","Entrée pas de tir 4","Sortie pas de tir 1","Sortie pas de tir 2","Sortie pas de tir 3","Sortie pas de tir 4","Fin du tour 1","Fin du tour 2","Fin du tour 3","Fin du tour 4"]:
             plt.gca().get_xgridlines()[i].set_linewidth(0.5)
         else:
             plt.gca().get_xgridlines()[i].set_linewidth(0.05)
@@ -346,7 +334,6 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
     limite_pour_plot_en_y = plt.ylim()[0]
     if not avec_range:
         plt.ylim(limite_pour_plot_en_y)
-    # plt.ylabel("Ecart par rapport au Superman")
     plt.legend()  
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)
@@ -426,17 +413,17 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
 
     plt.axhline(y=0, color='black', linewidth=0.1)
     plt.title("Ecart au meilleur skieur sur la course (en secondes)", fontsize=12)
-    # labels = [str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
-    # plt.gca().set_yticklabels(labels)
     
     plt.grid(True, color='black', linestyle='--', linewidth=0.05)
-    # print([liste_distance_au_depart_des_ST_pour_plot[i] for i in indices], [nom_abscisse_pour_plot[i] for i in indices])
     plt.xticks([liste_distance_au_depart_des_ST_pour_plot[i] for i in indices], [nom_abscisse_pour_plot[i] for i in indices], rotation=90, fontsize=fontize_xticks)
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
     
     xtick_labels = plt.xticks()[1]
     for i, label in enumerate(xtick_labels):
         # print(label.get_text())
-        if label.get_text() in ["Entrée pas de tir 1","Entrée pas de tir 2","Entrée pas de tir 3","Entrée pas de tir 4","Sortie pas de tir 1","Sortie pas de tir 2","Sortie pas de tir 3","Sortie pas de tir 4"]:
+        if label.get_text() in ["Entrée pas de tir 1","Entrée pas de tir 2","Entrée pas de tir 3","Entrée pas de tir 4","Sortie pas de tir 1","Sortie pas de tir 2","Sortie pas de tir 3","Sortie pas de tir 4","Fin du tour 1","Fin du tour 2","Fin du tour 3","Fin du tour 4"]:
             plt.gca().get_xgridlines()[i].set_linewidth(0.5)
         else:
             plt.gca().get_xgridlines()[i].set_linewidth(0.05)
@@ -445,7 +432,7 @@ def graphes_superman_et_ecart_au_leader(df_temps_de_ski, liste_distance_au_depar
     if not avec_range:
         plt.ylim(limite_pour_plot_en_y)
     
-    # plt.ylabel("Ecart par rapport au leader en temps réel (s)")
+
     plt.legend()   
     plt.gca().spines['right'].set_visible(False)
     plt.gca().spines['top'].set_visible(False)

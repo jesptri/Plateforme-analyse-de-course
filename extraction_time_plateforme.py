@@ -35,7 +35,7 @@ from fonctions_utiles_code_plateforme import convert_chrono_to_seconds
 
 
 
-def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course, SPLIT_TIME, moteur_de_recherche=str):
+def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_course, Saison_de_la_course, SPLIT_TIME, moteur_de_recherche=str):
     
     
     ##### CREATION DU TABLEAU BIB_NOM_NATIONALITE #####
@@ -85,10 +85,15 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
         if number_of_clicks > 0:
             fleche_gauche.click()
         elif number_of_clicks < 0:
-            fleche_droite.click()      
+            fleche_droite.click()     
+            
+    ### IBU CUP
+    
+    if Competition_de_la_course == "IBU CUP":
+        ibu = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "a[href='#dbSchedule2']")))
+        ibu.click() 
     
     ### SELECTION DE LA COURSE ###
-    
     
     try:
         course1 = WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, f"//span[contains(text(), '{Lieu_de_la_course}')]")))
@@ -243,7 +248,7 @@ def time_data_to_excel(Lieu_de_la_course, Type_de_la_course, Saison_de_la_course
     
     ### CREATION DU FICHIER EXCEL ###
 
-    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx"
+    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx"
     writer = pd.ExcelWriter(chemin_fichier_excel, engine='xlsxwriter')
     
     ### SELECTION DES SPLIT TIME ###

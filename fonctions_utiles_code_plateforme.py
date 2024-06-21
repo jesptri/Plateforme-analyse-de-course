@@ -2,6 +2,16 @@ import re as re
 import streamlit as st
 import zipfile
 
+# format des yticks, remplacer les - par un +
+
+def custom_format(value, pos):
+    if value < 0:
+        return f"+{-value:.1f}"
+    elif value == 0:
+        return 0
+    else:
+        return f"-{value:.1f}"
+
 ### FONCTION QUI VERIFIE SI LE FICHIER SOULEVE UNE EXCEPTION DE TYPE BADZIPFILE ###
 
 def is_zipfile_valid(file_path):

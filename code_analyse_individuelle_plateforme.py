@@ -7,6 +7,7 @@ from fonctions_utiles_code_plateforme import f_df_sans_temps_shoot
 from fonctions_utiles_code_plateforme import split_tour_par_tour
 from fonctions_utiles_code_plateforme import split_tour_par_tour_ski_de_fond
 from fonctions_utiles_code_plateforme import df_temps_de_ski_ski_de_fond
+from fonctions_utiles_code_plateforme import custom_format
 
 # df = pd.read_excel("c:\\Users\\jules\\Desktop\\Stage CNSNMM\\Analyse de course\\Lenzerheide\\ST sprint femmes.xlsx", sheet_name='ST Lenzerheide')
 
@@ -405,7 +406,6 @@ def graphes_VTT_ski_de_fond(df, sexe, top_n, biathletes_a_afficher, nombre_de_to
     split_pour_graphe_pacing_tous_les_tours = [[] for _ in range(nombre_de_tours)]
     split_pour_graphe_pacing_tous_les_tours[0] = split_pour_graphe_pacing_tour_1
 
-    # print("split_tour_par_tour_ski_de_fond(df, nombre_de_tours): " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)))
     if split_pour_graphe_pacing_tour_1 != "Tour complet":
         for numero_tour in range(1,nombre_de_tours):
             split_pour_graphe_pacing_tous_les_tours[numero_tour] = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[numero_tour][index_du_split_choisi]
@@ -457,14 +457,17 @@ def graphes_VTT_ski_de_fond(df, sexe, top_n, biathletes_a_afficher, nombre_de_to
                     plt.text(nombre_de_tours + 0.1, ecarts_X_tours[index_biathlete][-1], ecarts_X_tours[index_biathlete][2])          
 
     plt.title("Pacing tour par tour")
-    plt.xticks(np.arange(nombre_de_tours+1)+1, ["Tour " + str(i) for i in range(1, nombre_de_tours+2)])
+    plt.xticks(np.arange(nombre_de_tours)+1, ["Tour " + str(i) for i in range(1, nombre_de_tours+1)])
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
+    
     plt.gca().spines['right'].set_visible(False)
     plt.xlim(0,nombre_de_tours+1)
     y_max = max(abs(plt.ylim()[0]-1), abs(plt.ylim()[1]+1))
     plt.ylim(-y_max,y_max)
     plt.grid()
     plt.tight_layout()
-    # plt.show()
     
     return fig1, fig5
 

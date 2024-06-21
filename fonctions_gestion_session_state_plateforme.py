@@ -107,9 +107,11 @@ def load_split_list(csv_st_file_path):
                 # row est une liste contenant une seule entrée
                 # try:
                 # row_data = row[0]
-                # print("row: " + str(row))
-                nom_liste_split = row[0]
-                liste_split_json = row[1]
+                row[0].split(",")
+                # print("row[0].split(","): " + str(row[0].split(",")))
+
+                nom_liste_split = row[0].split(",")[0]
+                liste_split_json = row[0].split(",")[1]
                 
                 # nom_liste_split, liste_split_json = row.split(",", 1)
                 

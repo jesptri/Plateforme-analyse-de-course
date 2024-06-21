@@ -71,19 +71,24 @@ with onglets[5]:
     if 'button_clicked_jonas' not in st.session_state:
         st.session_state.button_clicked_jonas = False
     
-    col_1_Jonas, col_2_Jonas, col_3_Jonas, col_4_Jonas= st.columns(4)
+    col_1_Jonas, col_2_Jonas, col_3_Jonas, col_4_Jonas, col_5_Jonas = st.columns(5)
     
     with col_1_Jonas: # sport
         choix_sport_temporary_jonas = st.selectbox("Discipline", ["Biathlon", "Ski de fond"], key="choix_sport_Jonas", on_change=off_button_click_jonas)
 
+    with col_2_Jonas: # sport
+        if choix_sport_temporary_jonas == "Biathlon":
+            choix_competition_temporary_jonas = st.selectbox("Compétition", ["WORLD CUP", "IBU CUP", "JUN.CUP"], key="choix_competition_Jonas", on_change=off_button_click_jonas)
+        elif choix_sport_temporary_jonas == "Ski de fond":
+            choix_competition_temporary_jonas = st.selectbox("Compétition", ["Coupe du monde", "Coupe d'Europe"], key="choix_competition_Jonas", on_change=off_button_click_jonas)
 
-    with col_2_Jonas: # 
+    with col_3_Jonas: # 
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
-    with col_3_Jonas: # lieu de la course
+    with col_4_Jonas: # lieu de la course
         choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
-    with col_4_Jonas: # type de la course
+    with col_5_Jonas: # type de la course
         choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
 
 
@@ -94,7 +99,7 @@ with onglets[5]:
     if st.session_state.button_clicked_jonas == True:
         
         # path_check = f"jesptri\\Plateforme-analyse-de-course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
-        path_check = f"{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
+        path_check = f"{choix_competition_temporary_jonas}_{choix_lieu_de_la_course_temporary_jonas}_{choix_type_de_la_course_temporary_jonas}_{choix_saison_temporary_jonas}.xlsx"
         path_check_if_exists = Path(path_check)
         if path_check_if_exists.is_file() and is_zipfile_valid(path_check_if_exists):
             st.success("Données du site IBU déjà téléchargées pour cette course !")
@@ -102,6 +107,7 @@ with onglets[5]:
         #     st.error("Fichier des données IBU corrompu !")
         
         choix_sport_Jonas = choix_sport_temporary_jonas
+        choix_competition_jonas = choix_competition_temporary_jonas
         choix_lieu_de_la_course_Jonas = choix_lieu_de_la_course_temporary_jonas
         choix_type_de_la_course_jonas = choix_type_de_la_course_temporary_jonas
         choix_saison_jonas = choix_saison_temporary_jonas
@@ -111,7 +117,7 @@ with onglets[5]:
 
         st.header("Remplissage des split time")
         
-        nom_liste_split_Jonas = f'split_time_{choix_sport_Jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
+        nom_liste_split_Jonas = f'split_time_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
         
         # Initialiser new_split dans session state si elle n'existe pas déjà
         if 'new_split' not in st.session_state:
@@ -156,9 +162,6 @@ with onglets[5]:
                     if loaded_file_split[liste_split] == ['']:
                         st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \nListe vide !")
                     else:
-                        # chaine_a_afficher = ""
-                        # for element in loaded_file_split[liste_split]:
-                        #     chaine_a_afficher = str(element) + " ; "
                         st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \n{loaded_file_split[liste_split]}")
 
         
@@ -182,7 +185,6 @@ with onglets[5]:
 
         try:
             liste_des_ST_choix_portions_Jonas = dictionnaire_course_liste_st[nom_liste_split_Jonas]
-            # print("split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas): " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)))  
             noms_intermediaires_Jonas = [] 
             for index_split, split in enumerate(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0]):
                 if index_split == 0:        
@@ -192,7 +194,7 @@ with onglets[5]:
 
             ### CHOIX DES PORTIONS PAR TYPE ###
             
-            nom_split_type_de_portion_Jonas = f'split_type_de_portion_{choix_sport_Jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
+            nom_split_type_de_portion_Jonas = f'split_type_de_portion_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
 
             if nom_split_type_de_portion_Jonas not in st.session_state:
                 st.session_state[nom_split_type_de_portion_Jonas] = [[],[],[],[]] 
@@ -230,33 +232,40 @@ with onglets[0]:
         
     st.header("Choix de la course")
 
-    col1, col2, col3, col4= st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1: # sport
         choix_sport_temporary = st.selectbox("Discipline", ["Biathlon", "Ski de fond"]) #["Biathlon", "Ski de fond"])
-        with col2: # saison
-            choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
+        
+    with col2:
+        if choix_sport_temporary == "Biathlon":
+            choix_competition_temporary = st.selectbox("Compétition", ["WORLD CUP", "IBU CUP", "JUN.CUP"], on_change=on_selectbox_change)
+        elif choix_sport_temporary == "Ski de fond":
+            choix_competition_temporary = st.selectbox("Compétition", ["Coupe du monde", "Coupe d'Europe"], on_change=on_selectbox_change)            
+    
+    with col3: # saison
+        choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
             
     if choix_sport_temporary == "Biathlon":
-        with col3: # lieu de la course
-            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)"], on_change=on_selectbox_change)
+        with col4: # lieu de la course
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)", "Kontiolahti (FIN)"], on_change=on_selectbox_change)
         
-        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
-            with col4: # type de la course
+        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)", "Kontiolahti (FIN)"]:
+            with col5: # type de la course
                 choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
         
         elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
-            with col4: # type de la course
+            with col5: # type de la course
                 choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
         
         else: # dans le cas où c'est Antholz
-            with col4: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)      
+            with col5: # type de la course
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)     
     else:
-        with col3: # lieu de la course
+        with col4: # lieu de la course
             choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Davos (SUI)"], on_change=on_selectbox_change)
         
-        with col4: # type de la course
+        with col5: # type de la course
                 choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20.0 km Pursuit Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
         
     if "Men" in choix_type_de_la_course_temporary:
@@ -273,16 +282,12 @@ with onglets[0]:
     elif "Individual" in choix_type_de_la_course_temporary or "Pursuit" in choix_type_de_la_course_temporary or "Mass start" in choix_type_de_la_course_temporary or "Short individual" in choix_type_de_la_course_temporary:
         nombre_de_shoots = 4
     
-      
     # Création du bouton pour valider les choix
         
-    # chemin_fichier_excel = f"jesptri\\Analyse_de_course\\data_ibu_excel\\{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
     if choix_sport_temporary == "Ski de fond":
-        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary} _{choix_saison_temporary}.xlsx"
+        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_competition_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary} _{choix_saison_temporary}.xlsx"
     else:
-        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
-
-    # print("chemin_fichier_excel: " + str(chemin_fichier_excel))
+        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_competition_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
     
     file_path = Path(chemin_fichier_excel)
     
@@ -307,6 +312,7 @@ with onglets[0]:
     dictionnaire_course_liste_st = load_split_list(csv_st_file_path_split)
                         
     choix_saison = choix_saison_temporary
+    choix_competition = choix_competition_temporary
     choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
     choix_type_de_la_course = choix_type_de_la_course_temporary
     choix_sport = choix_sport_temporary
@@ -314,7 +320,7 @@ with onglets[0]:
     # NOMS DES TYPES DE PORTION #
     
     try:
-        nom_course = f'split_type_de_portion_{choix_sport}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
+        nom_course = f'split_type_de_portion_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
         noms_intermediaires_bosses = loaded_file_type[nom_course][0]  
         noms_intermediaires_descentes = loaded_file_type[nom_course][1]  
         noms_intermediaires_plats = loaded_file_type[nom_course][2]  
@@ -333,7 +339,7 @@ with onglets[0]:
     if not file_path.is_file():
 
         for split_course in dictionnaire_course_liste_st:
-            key = f'split_time_{choix_sport}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
+            key = f'split_time_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
             if key in split_course:    
                 SPLIT_TIME = dictionnaire_course_liste_st[split_course]
                 list_found_or_not = True
@@ -343,7 +349,7 @@ with onglets[0]:
         else: 
         # try:
             message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
-            time_data_to_excel(choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
+            time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
         #     # break
         # except:
         #     message_placeholder.error("**Erreur, vérifiez les données ou réessayez !**")
@@ -385,7 +391,6 @@ with onglets[0]:
         # print(df)
 
         # print("split_tour_par_tour(df, nombre_de_shoots): " + str(split_tour_par_tour(df, nombre_de_shoots)))
-        # print("cacaprout: " + str(split_tour_par_tour_ski_de_fond(df, 2)))
         
         
         noms_intermediaires = [] 
@@ -683,30 +688,31 @@ with onglets[0]:
                 liste_y_max = []
                 if choix_sport == "Biathlon":
                     for numero_tour in range(nombre_de_shoots+1):
-                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, choix_sport, nombre_de_tours)[1])
-                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, choix_sport, nombre_de_tours)[2])
+                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[1])
+                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[2])
                 else:
                     for numero_tour in range(nombre_de_tours):
-                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, choix_sport, nombre_de_tours)[1])
-                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, choix_sport, nombre_de_tours)[2])
+                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[1])
+                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[2])
 
                 max_min_en_absolu = max(max([abs(x) for x in liste_y_max]),abs(max([abs(x) for x in liste_y_min])))
+                
                 if choix_sport == "Biathlon":
                     with col_zoom_tour_1:
-                        fig_superman_agrandi_tour_1 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[0], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                        fig_superman_agrandi_tour_1 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[0], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 1)
                         st.pyplot(fig_superman_agrandi_tour_1)   
                     with col_zoom_tour_2:    
-                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[1], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 2, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[1], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 2)
                             st.pyplot(fig_superman_agrandi_tour_2)   
                     with col_zoom_tour_3:
-                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[2], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 3, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[2], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 3)
                             st.pyplot(fig_superman_agrandi_tour_2)   
                     if nombre_de_shoots == 4:
                         with col_zoom_tour_1:     
-                            fig_superman_agrandi_tour_4 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[3], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 4, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                            fig_superman_agrandi_tour_4 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[3], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 4)
                             st.pyplot(fig_superman_agrandi_tour_4)   
                         with col_zoom_tour_2:
-                            fig_superman_agrandi_tour_5 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[4], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 5, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                            fig_superman_agrandi_tour_5 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[4], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 5)
                             st.pyplot(fig_superman_agrandi_tour_5) 
                 else:
                     for numero_tour in range(nombre_de_tours):
@@ -717,7 +723,7 @@ with onglets[0]:
                         else :
                             col_to_use = col_zoom_tour_3
                         with col_to_use:
-                            fig_superman_agrandi_tour = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, numero_tour + 1, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours)
+                            fig_superman_agrandi_tour = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, numero_tour + 1)
                             st.pyplot(fig_superman_agrandi_tour)  
 
 
