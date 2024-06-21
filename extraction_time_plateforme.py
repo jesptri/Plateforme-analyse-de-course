@@ -52,9 +52,9 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     service = Service(PATH)
     
     edge_options = Options()
-    edge_options.add_argument('--headless')
-    edge_options.add_argument('--no-sandbox')
-    edge_options.add_argument('--disable-dev-shm-usage')
+    # edge_options.add_argument('--headless')
+    # edge_options.add_argument('--no-sandbox')
+    # edge_options.add_argument('--disable-dev-shm-usage')
 
     # Initialisation du WebDriver
     service = Service(PATH)
@@ -99,8 +99,9 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
         course1 = WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, f"//span[contains(text(), '{Lieu_de_la_course}')]")))
         course1.click()
     except:
-        print("Pas de course pour le lieu sélectionné !")
-        
+        # print("Pas de course pour le lieu sélectionné !")
+        pass
+            
     format1 = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//td[contains(text(), '{Type_de_la_course}')]")))
     format1.click()
     relive = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'RE-LIVE')]")))
@@ -119,8 +120,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     noms_data_0 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='au-target colShortName']")
     nationalites_data_0 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='colNat']/img[@class='au-target']")
             
-
-    bib_data_0 = [bib for bib in bib_data_0 if bib.text != "Bib"]
+    try:
+        bib_data_0 = [bib for bib in bib_data_0 if bib.text != "Bib"]
+    except:
+        pass
                     
     data_0 = []
     
@@ -143,7 +146,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     noms_data_1 = driver.find_elements(By.XPATH, ".//div[@class='au-target colShortName']")
     nationalites_data_1 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='colNat']/img[@class='au-target']")
     
-    bib_data_1 = [bib for bib in bib_data_1 if bib.text != "Bib"]
+    try:
+        bib_data_1 = [bib for bib in bib_data_1 if bib.text != "Bib"]
+    except:
+        pass
             
     data_1 = []
             
@@ -165,7 +171,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     noms_data_2 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='au-target colShortName']")
     nationalites_data_2 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='colNat']/img[@class='au-target']")
 
-    bib_data_2 = [bib for bib in bib_data_2 if bib.text != "Bib"]
+    try:
+        bib_data_2 = [bib for bib in bib_data_2 if bib.text != "Bib"]
+    except:
+        pass
     
     data_2 = []
     
@@ -187,7 +196,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     noms_data_3 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='au-target colShortName']")
     nationalites_data_3 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='colNat']/img[@class='au-target']")
 
-    bib_data_3 = [bib for bib in bib_data_3 if bib.text != "Bib"]
+    try:
+        bib_data_3 = [bib for bib in bib_data_3 if bib.text != "Bib"]
+    except:
+        pass
     
     data_3 = []
     
@@ -209,7 +221,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     noms_data_4 = driver.find_elements(By.XPATH, ".//div[@class='au-target colShortName']")
     nationalites_data_4 = biathlete_data[0].find_elements(By.XPATH, ".//div[@class='colNat']/img[@class='au-target']")
     
-    bib_data_4 = [bib for bib in bib_data_4 if bib.text != "Bib"]
+    try:
+        bib_data_4 = [bib for bib in bib_data_4 if bib.text != "Bib"]
+    except:
+        pass
             
     data_4 = []
             
@@ -248,7 +263,10 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     
     ### CREATION DU FICHIER EXCEL ###
 
-    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx"
+    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
+    
+    # chemin_fichier_excel = f"c:\\Users\\jules\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour ordi
+    
     writer = pd.ExcelWriter(chemin_fichier_excel, engine='xlsxwriter')
     
     ### SELECTION DES SPLIT TIME ###
@@ -449,8 +467,6 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
 
         # print("bib_name_nat: " + str(bib_name_nat))
 
-        if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-            print("endroit 1")
 
         for index_biathlete in range(new_good_data.shape[0]):
             for nom_nationalite in bib_name_nat:
@@ -479,8 +495,6 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
         
         # print("après conversion en secondes: " + str(new_good_data))
         
-        if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-            print("endroit 2")
 
         temps_leader = new_good_data.at[new_good_data.index[0], SPLIT_TIME[i]]
 
@@ -498,43 +512,34 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
             df_final.sort_values(by='Bib', inplace=True)
             df_final.reset_index(drop=True, inplace=True)
             
-        if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-            print("endroit 3")
-            
-        if SPLIT_TIME[i] == SPLIT_TIME[-2]: # -2 et pas -1 pour bug
+        if SPLIT_TIME[i] == SPLIT_TIME[-2]: ### -2 pour test !!!
             # df_final["Ranking"] = new_good_data["Ranking"]
-            df_final = df_final.merge(new_good_data[['Bib', 'Ranking']], on='Bib', how='left')
-
-        if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-            print("endroit 4")
+            for index_biathlete in range(df_final.shape[0]):
+                for index_biathlete_bis in range(new_good_data.shape[0]):
+                    if df_final.iloc[index_biathlete]["Bib"] == new_good_data.iloc[index_biathlete_bis]["Bib"]:
+                        df_final.at[index_biathlete,"Ranking"] = new_good_data.iloc[index_biathlete_bis]["Ranking"]
+                        break
                         
-        df_final = df_final.merge(new_good_data[['Bib', SPLIT_TIME[i]]], on='Bib', how='left')
-        
+        for index_biathlete in range(df_final.shape[0]):
+            for index_biathlete_bis in range(new_good_data.shape[0]):
+                if df_final.iloc[index_biathlete]["Bib"] == new_good_data.iloc[index_biathlete_bis]["Bib"]:
+                    df_final.at[index_biathlete,SPLIT_TIME[i]] = new_good_data.iloc[index_biathlete_bis][SPLIT_TIME[i]]
+                    break  
+                        
         ### ici il y a les erreurs dans les chronos ###
         
         # print("df_final: " + str(df_final))
             
     ### FERMER LA PAGE OUVERTE POUR PAS QUE CA PLANTE + ENREGISTREMENT
 
-    if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-        print("endroit 5")
-
     nom_feuille_fusionnee = "Tous les ST"
     
     df_final.dropna(inplace=True)
     
-    if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-        print("endroit 6")
-    
     df_final = df_final.drop_duplicates(subset=["Bib", "Name"])
-
-    if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-        print("endroit 7")
 
     df_final.to_excel(writer, sheet_name=nom_feuille_fusionnee, index=False)
         
-    if SPLIT_TIME[-2] == SPLIT_TIME[i]:
-        print("endroit 8")
         
     writer.close() 
     driver.close()

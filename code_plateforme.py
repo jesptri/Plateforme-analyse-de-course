@@ -86,10 +86,10 @@ with onglets[5]:
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_4_Jonas: # lieu de la course
-        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
+        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Kontiolahti (FIN)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
     with col_5_Jonas: # type de la course
-        choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
+        choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint", "Men 20km Individual", "Women 15km Individual"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
 
 
     st.button('Cliquez pour valider', key="bouton Jonas", on_click=on_button_click_jonas)
@@ -250,13 +250,13 @@ with onglets[0]:
         with col4: # lieu de la course
             choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)", "Kontiolahti (FIN)"], on_change=on_selectbox_change)
         
-        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)", "Kontiolahti (FIN)"]:
+        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
             with col5: # type de la course
                 choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
         
-        elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)"]:
+        elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)", "Kontiolahti (FIN)"]:
             with col5: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Individual","Women 7.5km Sprint","Men 10km Sprint"], on_change=on_selectbox_change)
+                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint","Women 7.5km Sprint","Men 20km Individual","Women 15km Individual"], on_change=on_selectbox_change)
         
         else: # dans le cas où c'est Antholz
             with col5: # type de la course
@@ -302,7 +302,7 @@ with onglets[0]:
     
     ### BOUTON VALIDER APPUYE OU PAS ###
       
-    # st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
+    st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
         
     _, col_texte, _ = st.columns([5,6,3])
         

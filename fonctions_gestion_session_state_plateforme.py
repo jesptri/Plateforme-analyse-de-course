@@ -107,20 +107,21 @@ def load_split_list(csv_st_file_path):
                 # row est une liste contenant une seule entrée
                 # try:
                 # row_data = row[0]
-                row[0].split(",")
-                # print("row[0].split(","): " + str(row[0].split(",")))
-
-                nom_liste_split = row[0].split(",")[0]
-                liste_split_json = row[0].split(",")[1]
-                
-                # nom_liste_split, liste_split_json = row.split(",", 1)
-                
-                liste_split_json = liste_split_json.replace('""', '"')
-                liste_split = [element.strip().strip('"') for element in liste_split_json[1:-1].split(',')]
-                my_list[nom_liste_split] = liste_split
-                # except:
+                # row[0].split(",")
+                # print("row: " + str(row))
+                # print("row.split(','): " + str(row.split(",")))
+                try:
+                    nom_liste_split = row[0]
+                    liste_split_json = row[1]
+                    
+                    # nom_liste_split, liste_split_json = row.split(",", 1)
+                    
+                    liste_split_json = liste_split_json.replace('""', '"')
+                    liste_split = [element.strip().strip('"') for element in liste_split_json[1:-1].split(',')]
+                    my_list[nom_liste_split] = liste_split
+                except:
                 #     print("exception levée")
-                #     pass
+                    pass
 
         # Convertir les caractères Unicode en caractères normaux après avoir parcouru toute la liste
         
@@ -179,17 +180,20 @@ def load_type_list(csv_st_file_path_type):
         with open(csv_st_file_path_type, "r", encoding="utf-8") as f:
             reader = csv.reader(f)
             for row in reader:
-                nom_liste_type = row[0]
-                listes_par_type_json = row[1]
-                liste_par_type = json.loads(listes_par_type_json)
-                
-                liste_type_bosse = liste_par_type[0]
-                liste_type_descente = liste_par_type[1]
-                liste_type_plat = liste_par_type[2]
-                liste_type_vallone = liste_par_type[3]
+                try:
+                    print("row: " + str(row))
+                    nom_liste_type = row[0]
+                    listes_par_type_json = row[1]
+                    liste_par_type = json.loads(listes_par_type_json)
+                    
+                    liste_type_bosse = liste_par_type[0]
+                    liste_type_descente = liste_par_type[1]
+                    liste_type_plat = liste_par_type[2]
+                    liste_type_vallone = liste_par_type[3]
 
-                my_list[nom_liste_type] = [liste_type_bosse, liste_type_descente, liste_type_plat, liste_type_vallone]
-                             
+                    my_list[nom_liste_type] = [liste_type_bosse, liste_type_descente, liste_type_plat, liste_type_vallone]
+                except:
+                    pass 
         return my_list
     
     except FileNotFoundError:
