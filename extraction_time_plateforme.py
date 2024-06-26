@@ -263,7 +263,9 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     
     ### CREATION DU FICHIER EXCEL ###
 
-    chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
+    # chemin_fichier_excel = f"jesptri\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
+
+    chemin_fichier_excel = f"Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
     
     # chemin_fichier_excel = f"c:\\Users\\jules\\Plateforme-analyse-de-course\\Biathlon_{Competition_de_la_course}_{Lieu_de_la_course}_{Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour ordi
     
@@ -497,10 +499,17 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
         
 
         temps_leader = new_good_data.at[new_good_data.index[0], SPLIT_TIME[i]]
+        print("new_good_data: " + str(new_good_data))
 
         for index, row in new_good_data.iterrows():
-            if index != new_good_data.index[0]:  # Vérifiez que ce n'est pas la première ligne
-                new_good_data.at[index, SPLIT_TIME[i]] += temps_leader       
+            # print("row[-1]: " + str(row[-1]))
+            if index == new_good_data.index[0] or row[-1] == temps_leader:  # Vérifiez que ce n'est pas la première ligne
+                print("Premier cas !")
+                new_good_data.at[index, SPLIT_TIME[i]] = temps_leader
+            else:
+                print("Deuxième cas !")
+                new_good_data.at[index, SPLIT_TIME[i]] += temps_leader 
+                      
         
         new_good_data.sort_values(by='Bib', inplace=True)
         new_good_data.reset_index(inplace=True, drop=True) # ajouté le drop=True

@@ -181,7 +181,7 @@ def load_type_list(csv_st_file_path_type):
             reader = csv.reader(f)
             for row in reader:
                 try:
-                    print("row: " + str(row))
+                    # print("row: " + str(row))
                     nom_liste_type = row[0]
                     listes_par_type_json = row[1]
                     liste_par_type = json.loads(listes_par_type_json)

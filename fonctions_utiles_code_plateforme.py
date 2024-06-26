@@ -214,26 +214,21 @@ def f_liste_distance_des_ST(df, distance_de_1_tour, distance_toute_la_course):
 
 def f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours):
     liste_distance_au_depart_des_ST = []
-    distance_de_1_tour = float(extract_distances(split_tour_par_tour_ski_de_fond(df,nombre_de_tours)[0][-1])[0][0])
-    nombre_de_tours = int(nombre_de_tours)
-    distance_de_la_course = nombre_de_tours*distance_de_1_tour
+    distance_de_1_tour = extract_distances(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][-1])        
+
+    distance_de_la_course = nombre_de_tours*distance_de_1_tour[0]
     for split in df.columns.to_list()[4:]:
-        if split == "Finish":
-            liste_distance_au_depart_des_ST.append(distance_de_la_course)
         liste_distance_au_depart_des_ST += (extract_distances(split))
+
     liste_distance_au_depart_des_ST_good = []
     for split in liste_distance_au_depart_des_ST:
-        if split == "Finish":
-            liste_distance_au_depart_des_ST_good.append("Finish")
         try:
             liste_distance_au_depart_des_ST_good.append(float(split[0]))
         except:
             liste_distance_au_depart_des_ST_good.append(float(split))
-    
-    # print("liste retournee sdf: " + str(liste_distance_au_depart_des_ST_good))
-    return liste_distance_au_depart_des_ST_good, distance_de_1_tour, distance_de_la_course
+    # print("liste_distance_au_depart_des_ST_good: " + str(liste_distance_au_depart_des_ST_good))
+    return liste_distance_au_depart_des_ST_good, distance_de_1_tour[0], distance_de_la_course
 
- 
 ### SOUSTRACTION DES TEMPS DE SHOOT ###
 
 def f_df_sans_temps_shoot(df, nombre_de_shoots):
@@ -286,10 +281,12 @@ def f_df_sans_temps_shoot(df, nombre_de_shoots):
 
 def extract_distances(text):
     # Utilisation de l'expression régulière pour trouver les sous-chaînes entre un espace et "km"
-    pattern = r'(\d+\.\d+)\s*km'
     pattern = r'(\d+(\.\d+)?)\s*km'
     matches = re.findall(pattern, text)
-    return matches
+    
+    # Extraire uniquement la première capture (le nombre) de chaque correspondance
+    distances = [float(match[0]) for match in matches]
+    return distances
 
 def indices_ST_PT_tours(df):
     colonnes_df = df.iloc[:, 4:].columns.tolist()
@@ -355,6 +352,8 @@ def delete_fake_value(df):
     
     return df
 
+### SKI DE FOND ###
+
 def df_to_df_moy_3_tours_ski_de_fond(df, noms_intermediaires, nombre_de_tours):
     
     liste_distance_des_ST = f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[0]
@@ -375,8 +374,6 @@ def df_to_df_moy_3_tours_ski_de_fond(df, noms_intermediaires, nombre_de_tours):
 
     return df_moy_3_tours, df_moy_3_tours_normed    
     
-### SKI DE FOND ###
-
 def split_tour_par_tour_ski_de_fond(df, nombre_de_tours):
     liste_a_retourner = []
     liste_des_split = df.columns.tolist()[4:]
@@ -402,11 +399,80 @@ def convert_chrono_to_seconds(chrono):
     if '+' in chrono:
         chrono = chrono.replace('+', '')
     if ':' in chrono:
-        minutes, secondes_dixiemes = chrono.split(':')
-        minutes = int(minutes) if minutes != '' else 0
-        secondes, dixiemes = map(float, secondes_dixiemes.split('.'))
-        return minutes * 60 + secondes + dixiemes / 10
+        if len(chrono.split(':')) == 2:
+            minutes, secondes_dixiemes = chrono.split(':')
+            minutes = int(minutes) if minutes != '' else 0
+            secondes, dixiemes = map(float, secondes_dixiemes.split('.'))
+            return minutes * 60 + secondes + dixiemes / 10
+        elif len(chrono.split(':')) == 3:
+            heures, minutes, secondes_dixiemes = chrono.split(':')
+            heures = int(heures) if heures != '' else 0
+            minutes = int(minutes) if minutes != '' else 0
+            secondes, dixiemes = map(float, secondes_dixiemes.split('.'))
+            return heures * 3600 + minutes * 60 + secondes + dixiemes / 10
     else:
         return float(chrono)    
 
-    
+### PERSONNALISATION DES TEXTES
+
+# message d'erreur
+
+def show_custom_error(message):
+    custom_error = f"""
+    <div style="
+        max-width: 500px;
+        margin: auto;
+        border-radius: 5px;
+        background-color: #ffcccc;
+        padding: 10px;
+        color: #990000;
+        text-align: center;
+        font-size: 16px;
+        margin-top: 10px;
+    ">
+        {message}
+    </div>
+    """
+    st.markdown(custom_error, unsafe_allow_html=True)   
+
+# message de succès
+
+def show_custom_success(message):
+    custom_error = f"""
+    <div style="
+        max-width: 500px;
+        margin: auto;
+        border-radius: 5px;
+        background-color: #ccffcc;
+        padding: 10px;
+        color: #006600;
+        text-align: center;
+        font-size: 16px;
+        margin-top: 10px;
+    ">
+        {message}
+    </div>
+    """
+    st.markdown(custom_error, unsafe_allow_html=True)   
+
+#         font-weight: bold;
+
+# question posée à l'utilisateur
+
+def show_custom_question(message):
+    custom_question = f"""
+    <div style="
+        max-width: 500px;
+        margin: auto;
+        border-radius: 5px;
+        background-color: #ffffcc;
+        padding: 10px;
+        color: black;
+        text-align: center;
+        font-size: 16px;
+        margin-top: 10px;
+    ">
+        {message}
+    </div>
+    """
+    st.markdown(custom_question, unsafe_allow_html=True)

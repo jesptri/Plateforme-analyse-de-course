@@ -4,8 +4,6 @@ import streamlit as st
 import os
 from pathlib import Path
 
-nombre_de_tours = 2
-
 # from streamlit_option_menu import option_menu
 
 from code_superman_plateforme import *
@@ -17,7 +15,7 @@ from fonctions_utiles_code_plateforme import *
 from fonctions_gestion_session_state_plateforme import *
 
 from extraction_time_plateforme import time_data_to_excel
-# from extraction_data_fis import extraction_data_fis
+from extraction_data_fis_site import time_data_to_excel_ski_de_fond
 
 
 ### CONFIGURATION DE LA PAGE ###
@@ -86,11 +84,10 @@ with onglets[5]:
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_4_Jonas: # lieu de la course
-        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Kontiolahti (FIN)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
+        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Kontiolahti (FIN)", "Idre Fjaell (SWE)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
     with col_5_Jonas: # type de la course
         choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint", "Men 20km Individual", "Women 15km Individual"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
-
 
     st.button('Cliquez pour valider', key="bouton Jonas", on_click=on_button_click_jonas)
     
@@ -112,127 +109,190 @@ with onglets[5]:
         choix_type_de_la_course_jonas = choix_type_de_la_course_temporary_jonas
         choix_saison_jonas = choix_saison_temporary_jonas
         
+        
         ### REMPLISSAGE DES SPLIT TIME ###
 
+        if choix_sport_Jonas == "Biathlon":
 
-        st.header("Remplissage des split time")
-        
-        nom_liste_split_Jonas = f'split_time_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
-        
-        # Initialiser new_split dans session state si elle n'existe pas déjà
-        if 'new_split' not in st.session_state:
-            st.session_state.new_split = ""
-        
-        if nom_liste_split_Jonas not in st.session_state:
-            st.session_state[nom_liste_split_Jonas] = []    
-                
-        st.text_input("Entrez le nouveau split time: ", key='new_split', on_change=add_split, args=(nom_liste_split_Jonas,))
+            st.header("Remplissage des split time")
             
-        col_shoot_1, col_shoot_2, col_shoot_3, col_shoot_4, col_Finish, _, col_empty_the_list, col_delete_last_element = st.columns([1,1,1,1,1,1,1.5,1.5])
-        with col_shoot_1:
-            st.button("Ajouter shoot 1", on_click=add_shoot_1, args=(nom_liste_split_Jonas,))
-        with col_shoot_2:
-            st.button("Ajouter shoot 2", on_click=add_shoot_2, args=(nom_liste_split_Jonas,))
-        with col_shoot_3:
-            st.button("Ajouter shoot 3", on_click=add_shoot_3, args=(nom_liste_split_Jonas,))
-        with col_shoot_4:
-            st.button("Ajouter shoot 4", on_click=add_shoot_4, args=(nom_liste_split_Jonas,)) 
-        with col_Finish:
-            st.button("Ajouter Finish", on_click=add_Finish, args=(nom_liste_split_Jonas,)) 
+            nom_liste_split_Jonas = f'split_time_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
             
-        with col_empty_the_list:
-            st.button("Supprimer le dernier élément ajouté", on_click=delete_last_element, args=(nom_liste_split_Jonas,))
-        with col_delete_last_element:
-            st.button("Recommencer le remplissage", on_click=empty_the_list, args=(nom_liste_split_Jonas,))
-
-
-        st.write(f"**Liste en cours de remplissage:**  \n  {st.session_state[nom_liste_split_Jonas]}")
-        
-        if st.button("Valider la liste de split time", on_click=save_split_list, args=(csv_st_file_path_split,)) == True:
-            show_temporary_message("Liste de split time validée !", 2)
-        
-        loaded_file_split = load_split_list(csv_st_file_path_split)
-
-        if st.checkbox("Afficher les listes déjà remplies", key="split"):
-            st.subheader("Listes de split déjà remplies: \n")
-            # print("loaded_file_split: " + str(loaded_file_split))
+            # Initialiser new_split dans session state si elle n'existe pas déjà
+            if 'new_split' not in st.session_state:
+                st.session_state.new_split = ""
+            
+            if nom_liste_split_Jonas not in st.session_state:
+                st.session_state[nom_liste_split_Jonas] = []    
+                    
+            st.text_input("Entrez le nouveau split time: ", key='new_split', on_change=add_split, args=(nom_liste_split_Jonas,))
                 
-            for liste_split in loaded_file_split:
-                if loaded_file_split[liste_split]:
-                    if loaded_file_split[liste_split] == ['']:
-                        st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \nListe vide !")
-                    else:
-                        st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \n{loaded_file_split[liste_split]}")
+            col_shoot_1, col_shoot_2, col_shoot_3, col_shoot_4, col_Finish, _, col_empty_the_list, col_delete_last_element = st.columns([1,1,1,1,1,1,1.5,1.5])
+            with col_shoot_1:
+                st.button("Ajouter shoot 1", on_click=add_shoot_1, args=(nom_liste_split_Jonas,))
+            with col_shoot_2:
+                st.button("Ajouter shoot 2", on_click=add_shoot_2, args=(nom_liste_split_Jonas,))
+            with col_shoot_3:
+                st.button("Ajouter shoot 3", on_click=add_shoot_3, args=(nom_liste_split_Jonas,))
+            with col_shoot_4:
+                st.button("Ajouter shoot 4", on_click=add_shoot_4, args=(nom_liste_split_Jonas,)) 
+            with col_Finish:
+                st.button("Ajouter Finish", on_click=add_Finish, args=(nom_liste_split_Jonas,)) 
+                
+            with col_empty_the_list:
+                st.button("Supprimer le dernier élément ajouté", on_click=delete_last_element, args=(nom_liste_split_Jonas,))
+            with col_delete_last_element:
+                st.button("Recommencer le remplissage", on_click=empty_the_list, args=(nom_liste_split_Jonas,))
 
-        
-        dictionnaire_course_liste_st = loaded_file_split
+
+            st.write(f"**Liste en cours de remplissage:**  \n  {st.session_state[nom_liste_split_Jonas]}")
+            
+            if st.button("Valider la liste de split time", on_click=save_split_list, args=(csv_st_file_path_split,)) == True:
+                show_temporary_message("Liste de split time validée !", 2)
+            
+            loaded_file_split = load_split_list(csv_st_file_path_split)
+
+            if st.checkbox("Afficher les listes déjà remplies", key="split"):
+                st.subheader("Listes de split déjà remplies: \n")
+                # print("loaded_file_split: " + str(loaded_file_split))
+                    
+                for liste_split in loaded_file_split:
+                    if loaded_file_split[liste_split]:
+                        if loaded_file_split[liste_split] == ['']:
+                            st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \nListe vide !")
+                        else:
+                            st.markdown(f"**{liste_split.replace('split_time_', '')}**:  \n{loaded_file_split[liste_split]}")
+
+            
+            dictionnaire_course_liste_st = loaded_file_split
 
 
-        ### SHOOTS 
+            ### SHOOTS 
 
 
-        if "Sprint" in choix_type_de_la_course_jonas:
-            nombre_de_shoots_Jonas = 2
-        elif "Individual" in choix_type_de_la_course_jonas or "Pursuit" in choix_type_de_la_course_jonas or "Mass start" in choix_type_de_la_course_jonas or "Short individual" in choix_type_de_la_course_jonas:
-            nombre_de_shoots_Jonas = 4
+            if "Sprint" in choix_type_de_la_course_jonas:
+                nombre_de_shoots_Jonas = 2
+            elif "Individual" in choix_type_de_la_course_jonas or "Pursuit" in choix_type_de_la_course_jonas or "Mass start" in choix_type_de_la_course_jonas or "Short individual" in choix_type_de_la_course_jonas:
+                nombre_de_shoots_Jonas = 4
     
 
-        ### TOUS LES NOMS D'INTERMEDIAIRES ###
+            ### TOUS LES NOMS D'INTERMEDIAIRES ###
+            
+            st.header("Choix du type de chaque portion")
+            
+            loaded_file_type = load_type_list(csv_st_file_path_type)
+
+            try:
+                liste_des_ST_choix_portions_Jonas = dictionnaire_course_liste_st[nom_liste_split_Jonas]
+                noms_intermediaires_Jonas = [] 
+                for index_split, split in enumerate(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0]):
+                    if index_split == 0:        
+                        noms_intermediaires_Jonas.append("Départ - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  Shooting 1 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  Shooting 2 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
+                    else:
+                        noms_intermediaires_Jonas.append(str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
+
+                ### CHOIX DES PORTIONS PAR TYPE ###
+                
+                nom_split_type_de_portion_Jonas = f'split_type_de_portion_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
+
+                if nom_split_type_de_portion_Jonas not in st.session_state:
+                    st.session_state[nom_split_type_de_portion_Jonas] = [[],[],[],[]] 
+
+
+                col_noms_intermediaires_bosses, col_intermediaires_descentes, col_intermediaires_plats, col_interemediaires_vallonés = st.columns(4)
+                
+                with col_noms_intermediaires_bosses:
+                    noms_intermediaires_bosses_jonas = st.multiselect("Portions en bosse", noms_intermediaires_Jonas, key="choix bosse Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "bosse",))
+                with col_intermediaires_descentes:
+                    noms_intermediaires_descentes_jonas = st.multiselect("Portions en descente", noms_intermediaires_Jonas, key="choix descente Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "descente",))
+                with col_intermediaires_plats:
+                    noms_intermediaires_plats_jonas = st.multiselect("Portions plates", noms_intermediaires_Jonas, key="choix plat Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "plat",))  
+                with col_interemediaires_vallonés:
+                    noms_intermediaires_vallonés_jonas = st.multiselect("Portions vallonées", noms_intermediaires_Jonas, key="choix valloné Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "valloné",))
+
+                # st.session_state
+
+                st.button("Valider les split par type de portion", on_click=save_type_list, args=(csv_st_file_path_type,))
+                
+                if st.checkbox("Afficher les listes déjà remplies", key="type de portion"):
+                    st.subheader("Listes type de portion déjà remplies: \n")
+                
+                    for liste_type in loaded_file_type:
+                        if loaded_file_type[liste_type]:
+                            st.markdown(f"**{liste_type.replace('split_type_de_portion_','')}:**  \n Portions en bosse: {loaded_file_type[liste_type][0]}  \n Portions en descente: {loaded_file_type[liste_type][1]}  \n Portions plates: {loaded_file_type[liste_type][2]}  \n Portions vallonées: {loaded_file_type[liste_type][3]}")
+                    dictionnaire_course_liste_type = loaded_file_type
+                    # print("dictionnaire_course_liste_type: " + str(dictionnaire_course_liste_type))
+                
+            except: 
+                st.error("Données de split time pas rentrées pour la course sélectionnée !")
         
-        st.header("Choix du type de chaque portion")
-        
-        loaded_file_type = load_type_list(csv_st_file_path_type)
-
-        try:
-            liste_des_ST_choix_portions_Jonas = dictionnaire_course_liste_st[nom_liste_split_Jonas]
-            noms_intermediaires_Jonas = [] 
-            for index_split, split in enumerate(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0]):
-                if index_split == 0:        
-                    noms_intermediaires_Jonas.append("Départ - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  Shooting 1 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  Shooting 2 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
-                else:
-                    noms_intermediaires_Jonas.append(str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
-
-            ### CHOIX DES PORTIONS PAR TYPE ###
+        # else:
             
-            nom_split_type_de_portion_Jonas = f'split_type_de_portion_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
-
-            if nom_split_type_de_portion_Jonas not in st.session_state:
-                st.session_state[nom_split_type_de_portion_Jonas] = [[],[],[],[]] 
-
-
-            col_noms_intermediaires_bosses, col_intermediaires_descentes, col_intermediaires_plats, col_interemediaires_vallonés = st.columns(4)
+        #     ### TOUS LES NOMS D'INTERMEDIAIRES ###
             
-            with col_noms_intermediaires_bosses:
-                noms_intermediaires_bosses_jonas = st.multiselect("Portions en bosse", noms_intermediaires_Jonas, key="choix bosse Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "bosse",))
-            with col_intermediaires_descentes:
-                noms_intermediaires_descentes_jonas = st.multiselect("Portions en descente", noms_intermediaires_Jonas, key="choix descente Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "descente",))
-            with col_intermediaires_plats:
-                noms_intermediaires_plats_jonas = st.multiselect("Portions plates", noms_intermediaires_Jonas, key="choix plat Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "plat",))  
-            with col_interemediaires_vallonés:
-                noms_intermediaires_vallonés_jonas = st.multiselect("Portions vallonées", noms_intermediaires_Jonas, key="choix valloné Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "valloné",))
+        #     st.header("Choix du type de chaque portion")
+            
+        #     loaded_file_type = load_type_list(csv_st_file_path_type)
 
-            # st.session_state
+        #     try:
+        #         liste_des_ST_choix_portions_Jonas = dictionnaire_course_liste_st[nom_liste_split_Jonas]
+        #         noms_intermediaires_Jonas = [] 
+        #         for index_split, split in enumerate(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0]):
+        #             if index_split == 0:        
+        #                 noms_intermediaires_Jonas.append("Départ - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  Shooting 1 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  Shooting 2 - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
+        #             else:
+        #                 noms_intermediaires_Jonas.append(str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[0][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[1][index_split]) + "  ||  " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split-1]) + " - " + str(split_tour_par_tour_Jonas(liste_des_ST_choix_portions_Jonas, nombre_de_shoots_Jonas)[2][index_split]))
 
-            st.button("Valider les split par type de portion", on_click=save_type_list, args=(csv_st_file_path_type,))
-            
-            if st.checkbox("Afficher les listes déjà remplies", key="type de portion"):
-                st.subheader("Listes type de portion déjà remplies: \n")
-            
-                for liste_type in loaded_file_type:
-                    if loaded_file_type[liste_type]:
-                        st.markdown(f"**{liste_type.replace('split_type_de_portion_','')}:**  \n Portions en bosse: {loaded_file_type[liste_type][0]}  \n Portions en descente: {loaded_file_type[liste_type][1]}  \n Portions plates: {loaded_file_type[liste_type][2]}  \n Portions vallonées: {loaded_file_type[liste_type][3]}")
-                dictionnaire_course_liste_type = loaded_file_type
-                # print("dictionnaire_course_liste_type: " + str(dictionnaire_course_liste_type))
-            
-        except: 
-            st.error("Données de split time pas rentrées pour la course sélectionnée !")
+        #         ### CHOIX DES PORTIONS PAR TYPE ###
+                
+        #         nom_split_type_de_portion_Jonas = f'split_type_de_portion_{choix_sport_Jonas}_{choix_competition_jonas}_{choix_lieu_de_la_course_Jonas}_{choix_type_de_la_course_jonas}_{choix_saison_jonas}'
+
+        #         if nom_split_type_de_portion_Jonas not in st.session_state:
+        #             st.session_state[nom_split_type_de_portion_Jonas] = [[],[],[],[]] 
+
+
+        #         col_noms_intermediaires_bosses, col_intermediaires_descentes, col_intermediaires_plats, col_interemediaires_vallonés = st.columns(4)
+                
+        #         with col_noms_intermediaires_bosses:
+        #             noms_intermediaires_bosses_jonas = st.multiselect("Portions en bosse", noms_intermediaires_Jonas, key="choix bosse Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "bosse",))
+        #         with col_intermediaires_descentes:
+        #             noms_intermediaires_descentes_jonas = st.multiselect("Portions en descente", noms_intermediaires_Jonas, key="choix descente Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "descente",))
+        #         with col_intermediaires_plats:
+        #             noms_intermediaires_plats_jonas = st.multiselect("Portions plates", noms_intermediaires_Jonas, key="choix plat Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "plat",))  
+        #         with col_interemediaires_vallonés:
+        #             noms_intermediaires_vallonés_jonas = st.multiselect("Portions vallonées", noms_intermediaires_Jonas, key="choix valloné Jonas", on_change=update_type, args=(nom_split_type_de_portion_Jonas, "valloné",))
+
+        #         # st.session_state
+
+        #         st.button("Valider les split par type de portion", on_click=save_type_list, args=(csv_st_file_path_type,))
+                
+        #         if st.checkbox("Afficher les listes déjà remplies", key="type de portion"):
+        #             st.subheader("Listes type de portion déjà remplies: \n")
+                
+        #             for liste_type in loaded_file_type:
+        #                 if loaded_file_type[liste_type]:
+        #                     st.markdown(f"**{liste_type.replace('split_type_de_portion_','')}:**  \n Portions en bosse: {loaded_file_type[liste_type][0]}  \n Portions en descente: {loaded_file_type[liste_type][1]}  \n Portions plates: {loaded_file_type[liste_type][2]}  \n Portions vallonées: {loaded_file_type[liste_type][3]}")
+        #             dictionnaire_course_liste_type = loaded_file_type
+        #             # print("dictionnaire_course_liste_type: " + str(dictionnaire_course_liste_type))
+                
+        #     except: 
+        #         st.error("Données de split time pas rentrées pour la course sélectionnée !")
+
+
+
+
+
+### ONGLET 0 ###
+
+
+
 
 
 with onglets[0]:
         
     st.header("Choix de la course")
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
 
     with col1: # sport
         choix_sport_temporary = st.selectbox("Discipline", ["Biathlon", "Ski de fond"]) #["Biathlon", "Ski de fond"])
@@ -241,33 +301,33 @@ with onglets[0]:
         if choix_sport_temporary == "Biathlon":
             choix_competition_temporary = st.selectbox("Compétition", ["WORLD CUP", "IBU CUP", "JUN.CUP"], on_change=on_selectbox_change)
         elif choix_sport_temporary == "Ski de fond":
-            choix_competition_temporary = st.selectbox("Compétition", ["Coupe du monde", "Coupe d'Europe"], on_change=on_selectbox_change)            
+            choix_competition_temporary = st.selectbox("Compétition", ["World Cup"], on_change=on_selectbox_change)            
     
     with col3: # saison
-        choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
-            
+        if choix_sport_temporary == "Biathlon":
+            choix_saison_temporary = st.selectbox("Saison", ["2023-2024"], on_change=on_selectbox_change)
+        elif choix_sport_temporary == "Ski de fond":
+            choix_saison_temporary = st.selectbox("Saison", ["2024"], on_change=on_selectbox_change)
+
     if choix_sport_temporary == "Biathlon":
         with col4: # lieu de la course
-            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)", "Kontiolahti (FIN)"], on_change=on_selectbox_change)
-        
-        if choix_lieu_de_la_course_temporary in ["Ruhpolding (GER)", "Lenzerheide (SUI)", "Oberhof (GER)"]:
-            with col5: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint"], on_change=on_selectbox_change)
-        
-        elif choix_lieu_de_la_course_temporary in ["Oestersund (SWE)", "Kontiolahti (FIN)"]:
-            with col5: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint","Women 7.5km Sprint","Men 20km Individual","Women 15km Individual"], on_change=on_selectbox_change)
-        
-        else: # dans le cas où c'est Antholz
-            with col5: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)     
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Hochfilzen (AUT)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)", "Kontiolahti (FIN)", "Nove Mesto Na Morave (CZE)", "Idre Fjaell (SWE)", "Canmore (CAN)", "Soldier Hollow, Utah (USA)", "Oslo Holmenkollen (NOR)", "Sjusjoen (NOR)", "Martell-Val Martello (ITA)", "Ridnaun-Val Ridanna (ITA)", "Arber (GER)", "Brezno-Osrblie (SVK)"], on_change=on_selectbox_change)
+
+        with col5: # type de la course
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint","Women 7.5km Sprint","Men 20km Individual","Women 15km Individual", "Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)
+    
+    # SKI DE FOND #    
+    
     else:
         with col4: # lieu de la course
-            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Davos (SUI)"], on_change=on_selectbox_change)
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Ruka", "Gällivare", "Östersund", "Trondheim", "Toblach", "Davos", "Val Di Fiemme", "Oberhof", "Goms", "Canmore", "Theodore Wirth Park, Minneapolis", "Lahti", "Oslo", "Drammen", "Falun"], on_change=on_selectbox_change)
         
         with col5: # type de la course
-                choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20.0 km Pursuit Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Pursuit Classic", "Women 20km Pursuit Classic", "Men Sprint Free", "Women Sprint Free", "Men 20km Mass Start Free", "Women 20km Mass Start Free", "Men 15km Mass Start Free", "Women 15km Mass Start Free", "Men 20km Mass Start Classic", "Women 20km Mass Start Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
         
+        # with col6: # nombre de tours si c'est du ski de fond
+        #     nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], on_change=on_selectbox_change)
+                    
     if "Men" in choix_type_de_la_course_temporary:
         choix_homme_ou_femme = "homme"
     elif "Women" in choix_type_de_la_course_temporary:
@@ -275,7 +335,6 @@ with onglets[0]:
     
     
     ### NOMBRE DE SHOOTS EN FONCTION DU TYPE DE LA COURSE ###
-    
     
     if "Sprint" in choix_type_de_la_course_temporary:
         nombre_de_shoots = 2
@@ -285,11 +344,12 @@ with onglets[0]:
     # Création du bouton pour valider les choix
         
     if choix_sport_temporary == "Ski de fond":
-        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_competition_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary} _{choix_saison_temporary}.xlsx"
+        chemin_fichier_excel = f"{choix_sport_temporary}_{choix_competition_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
     else:
         chemin_fichier_excel = f"{choix_sport_temporary}_{choix_competition_temporary}_{choix_lieu_de_la_course_temporary}_{choix_type_de_la_course_temporary}_{choix_saison_temporary}.xlsx"
     
     file_path = Path(chemin_fichier_excel)
+    # print("chemin_fichier_excel: " + str(chemin_fichier_excel))
     
     ### INITIALISATION DE L'ETAT DU BOUTON ET DES SELECTBOX ###
 
@@ -301,8 +361,9 @@ with onglets[0]:
     
     
     ### BOUTON VALIDER APPUYE OU PAS ###
+    
       
-    st.button('Cliquez pour valider', key="bouton entraineur", on_click=on_button_click_coach)
+    st.button('Valider / Télécharger les données', key="bouton_entraineur", on_click=on_button_click_coach)
         
     _, col_texte, _ = st.columns([5,6,3])
         
@@ -315,41 +376,41 @@ with onglets[0]:
     choix_competition = choix_competition_temporary
     choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
     choix_type_de_la_course = choix_type_de_la_course_temporary
-    choix_sport = choix_sport_temporary
-        
-    # NOMS DES TYPES DE PORTION #
-    
-    try:
-        nom_course = f'split_type_de_portion_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
-        noms_intermediaires_bosses = loaded_file_type[nom_course][0]  
-        noms_intermediaires_descentes = loaded_file_type[nom_course][1]  
-        noms_intermediaires_plats = loaded_file_type[nom_course][2]  
-        noms_intermediaires_vallones = loaded_file_type[nom_course][3]  
-    except:
-        st.error("Données types de portion non rentrées pour la course sélectionnée !")
-        
+    choix_sport = choix_sport_temporary       
         
     ### TANT QUE LE FICHIER N'EST PAS VALIDE ###
         
-    # while not file_path.is_file() or not is_zipfile_valid(file_path):
-
-        ### SI LE FICHIER N'EXISTE PAS ###
+    ### SI LE FICHIER N'EXISTE PAS ###
 
     list_found_or_not = False
     if not file_path.is_file():
+        if choix_sport_temporary == "Biathlon":
+            for split_course in dictionnaire_course_liste_st:
+                key = f'split_time_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
+                if key in split_course:    
+                    SPLIT_TIME = dictionnaire_course_liste_st[split_course]
+                    list_found_or_not = True
+                if not list_found_or_not:
+                    # message_placeholder.error("Erreur, liste de split time non trouvée.")
+                    show_custom_error("Erreur:")
+                    show_custom_error("Soit la liste de split time n'a pas été rentrée !")
+                    show_custom_error("Soit la course sélectionnée n'existe pas !")
+                    # show_custom_error("Vérifiez les données sélectionnées !")
+                    break
+                else: 
+                    message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️")
+                    if st.session_state.bouton_entraineur == True:
+                        time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")                     
+        else:
+            # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
+            # print("ça devrait se lancer !!!!")
+            if st.session_state.bouton_entraineur == True:
+                show_custom_question("Téléchargement en cours...")
+                time_data_to_excel_ski_de_fond(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison) 
+            else:
+                # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
+                show_custom_question("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️")
 
-        for split_course in dictionnaire_course_liste_st:
-            key = f'split_time_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
-            if key in split_course:    
-                SPLIT_TIME = dictionnaire_course_liste_st[split_course]
-                list_found_or_not = True
-        
-        if not list_found_or_not:
-            message_placeholder.error("Erreur, liste de split time non trouvée.")
-        else: 
-        # try:
-            message_placeholder.write("Données chronos non téléchargées ! Téléchargement en cours...")
-            time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")  
         #     # break
         # except:
         #     message_placeholder.error("**Erreur, vérifiez les données ou réessayez !**")
@@ -367,8 +428,12 @@ with onglets[0]:
     
     if file_path.is_file() and is_zipfile_valid(file_path):
     
-        message_placeholder.success("**Données téléchargées ! Vous pouvez consulter les analyses !**")
-
+        # message_placeholder.success("**Données téléchargées ! Vous pouvez consulter les analyses !**")
+        show_custom_success("Données téléchargées ! Vous pouvez consulter les analyses !")
+        
+        with col6: # nombre de tours si c'est du ski de fond
+            nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], on_change=on_selectbox_change)
+            
         choix_saison = choix_saison_temporary
         choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
         choix_type_de_la_course = choix_type_de_la_course_temporary
@@ -379,12 +444,24 @@ with onglets[0]:
         df = pd.read_excel(chemin_fichier_excel, engine='openpyxl')
         
         if choix_sport == "Biathlon":        
-            # print("extract bug: " + str(extract_distances(choix_type_de_la_course)[0][0]))
-            distance_toute_la_course = float(extract_distances(choix_type_de_la_course)[0][0])
+            # print("extract bug: " + str(extract_distances(choix_type_de_la_course)))
+            distance_toute_la_course = float(extract_distances(choix_type_de_la_course)[0])
             distance_de_1_tour = float(distance_toute_la_course/(nombre_de_shoots+1))
         else:
             distance_toute_la_course = f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[2] 
             distance_de_1_tour = f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[1] 
+        
+        # NOMS DES TYPES DE PORTION #
+        
+        try:
+            nom_course = f'split_type_de_portion_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
+            noms_intermediaires_bosses = loaded_file_type[nom_course][0]  
+            noms_intermediaires_descentes = loaded_file_type[nom_course][1]  
+            noms_intermediaires_plats = loaded_file_type[nom_course][2]  
+            noms_intermediaires_vallones = loaded_file_type[nom_course][3]  
+        except:
+            # st.error("Données types de portion non rentrées pour la course sélectionnée !")
+            show_custom_error("Données types de portion non rentrées pour la course sélectionnée !")
         
         # ### TOUS LES NOMS D'INTERMEDIAIRES ###
 
@@ -401,14 +478,6 @@ with onglets[0]:
                 else:
                     noms_intermediaires.append(str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[0][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[1][index_split]) + "  ||  " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split-1]) + " - " + str(split_tour_par_tour(df, nombre_de_shoots)[2][index_split]))
 
-            # split_du_tour_1 = split_tour_par_tour(df, nombre_de_shoots)[0]
-            # split_du_tour_2 = split_tour_par_tour(df, nombre_de_shoots)[1]
-            # split_du_tour_3 = split_tour_par_tour(df, nombre_de_shoots)[2]
-
-            # if nombre_de_shoots == 4:
-            #     split_du_tour_4 = split_tour_par_tour(df, nombre_de_shoots)[3]
-            #     split_du_tour_5 = split_tour_par_tour(df, nombre_de_shoots)[4]
-
             split_time_a_afficher_un_par_un = []
             for splits_tour in split_tour_par_tour(df, nombre_de_shoots):
                 split_time_a_afficher_un_par_un += splits_tour 
@@ -418,12 +487,9 @@ with onglets[0]:
         else: # cas ou c'est le ski de fond qui est choisi
             for index_split, split in enumerate(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0]):
                 if index_split == 0:        
-                    noms_intermediaires.append("Départ - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split]) + "  ||  " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_shoots)[1][index_split]))
+                    noms_intermediaires.append("Départ - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split]) + "  ||  " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1][index_split]))
                 else:
                     noms_intermediaires.append(str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0][index_split]) + "  ||  " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1][index_split-1]) + " - " + str(split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1][index_split]))
-
-            # split_du_tour_1 = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[0]
-            # split_du_tour_2 = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[1]
 
             split_time_a_afficher_un_par_un = []
             for splits_tour in split_tour_par_tour_ski_de_fond(df, nombre_de_tours):
@@ -515,7 +581,7 @@ with onglets[0]:
             
             st.subheader("Portions créant de l'écart")
             
-            st.write("_Plus la barre est haute, plus la portion crée de l'écart entre les biathlètes._")
+            st.write("_Plus la barre est haute, plus la portion crée de l'écart entre les athlètes._")
 
             _, col_moustache, _ = st.columns([2,4,2])
 
@@ -547,16 +613,18 @@ with onglets[0]:
 
             with col_temps_de_ski_total_temps_de_ski_par_tour:
                 top_n_2 = st.slider("Top ...", min_value=0, max_value=75, value=10, key="top n 2")
-                st.info("Les biathlètes sont ordonnés par le classement de la course, les français sont placés sur la droite.")
+                st.info("Les athlètes sont ordonnés par le classement de la course, les français sont placés sur la droite.")
             with col_pacing_tour_par_tour:
                 biathletes_2 = st.multiselect(nom_des_sportifs, all_athletes, key="biathlètes 2")
                 if choix_sport == "Biathlon":
                     split_a_afficher_pacing_tour_par_tour = st.selectbox("Split time à afficher: ", split_tour_par_tour(df,nombre_de_shoots)[0] + ["Tir","Tour complet"])
                 else:
                     split_a_afficher_pacing_tour_par_tour = st.selectbox("Split time à afficher: ", split_tour_par_tour_ski_de_fond(df,nombre_de_tours)[0] + ["Tour complet"])
-                    
-                st.info("Ligne à 0=moyenne des 3 tours pour chaque biathlète. Les tours ne font pas exactement la même distance...")
-
+                
+                if choix_sport == "Biathlon":   
+                    st.info("Ligne à 0=chrono du premier tour pour chaque athlète. Les tours ne font pas exactement la même distance...")
+                elif choix_sport == "Ski de fond":   
+                    st.info("Ligne à 0=chrono du premier tour pour chaque athlète.")
 
 
             ## 3 GRAPHES DE L'ANALYSE INDIVIDUELLE ##        
@@ -601,7 +669,7 @@ with onglets[0]:
             
             if len(nationalites_2) == 0:
                 with col_message:
-                    st.warning("**⚠️ Sélectionnez les nationalités/biathlètes à afficher ⚠️**")        
+                    st.warning("**⚠️ Sélectionnez les nationalités/athlètes à afficher ⚠️**")        
             else:
                 if choix_sport == "Biathlon":
                     fig_points_forts_faibles = f_points_forts_faibles_plateforme(df, biathletes_points_forts_faibles, nationalites_2, noms_intermediaires, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots)
@@ -688,31 +756,31 @@ with onglets[0]:
                 liste_y_max = []
                 if choix_sport == "Biathlon":
                     for numero_tour in range(nombre_de_shoots+1):
-                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[1])
-                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[2])
+                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[1])
+                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, 1)[2])
                 else:
                     for numero_tour in range(nombre_de_tours):
-                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[1])
-                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, choix_sport, nombre_de_tours, 1)[2])
+                        liste_y_min.append(analyse_portion_specifique_graphe_1_sans_meme_echelle_ski_de_fond(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], affichage_arg, nombre_de_tours, 1)[1])
+                        liste_y_max.append(analyse_portion_specifique_graphe_1_sans_meme_echelle_ski_de_fond(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], affichage_arg, nombre_de_tours, 1)[2])
 
                 max_min_en_absolu = max(max([abs(x) for x in liste_y_max]),abs(max([abs(x) for x in liste_y_min])))
                 
                 if choix_sport == "Biathlon":
                     with col_zoom_tour_1:
-                        fig_superman_agrandi_tour_1 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[0], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 1)
+                        fig_superman_agrandi_tour_1 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[0], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, 1)
                         st.pyplot(fig_superman_agrandi_tour_1)   
                     with col_zoom_tour_2:    
-                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[1], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 2)
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[1], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, 2)
                             st.pyplot(fig_superman_agrandi_tour_2)   
                     with col_zoom_tour_3:
-                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[2], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 3)
+                            fig_superman_agrandi_tour_2 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[2], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, 3)
                             st.pyplot(fig_superman_agrandi_tour_2)   
                     if nombre_de_shoots == 4:
                         with col_zoom_tour_1:     
-                            fig_superman_agrandi_tour_4 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[3], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 4)
+                            fig_superman_agrandi_tour_4 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[3], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, 4)
                             st.pyplot(fig_superman_agrandi_tour_4)   
                         with col_zoom_tour_2:
-                            fig_superman_agrandi_tour_5 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[4], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, 5)
+                            fig_superman_agrandi_tour_5 = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[4], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, 5)
                             st.pyplot(fig_superman_agrandi_tour_5) 
                 else:
                     for numero_tour in range(nombre_de_tours):
@@ -723,18 +791,23 @@ with onglets[0]:
                         else :
                             col_to_use = col_zoom_tour_3
                         with col_to_use:
-                            fig_superman_agrandi_tour = analyse_portion_specifique_graphe_1(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], distance_de_1_tour, distance_toute_la_course, affichage_arg, nombre_de_shoots, -max_min_en_absolu, max_min_en_absolu, choix_sport, nombre_de_tours, numero_tour + 1)
+                            fig_superman_agrandi_tour = analyse_portion_specifique_graphe_1_ski_de_fond(df, biathletes_3, nationalites_3, split_superman_agrandi_tous_les_tours[numero_tour], distance_de_1_tour, distance_toute_la_course, affichage_arg, -max_min_en_absolu, max_min_en_absolu, nombre_de_tours, numero_tour + 1)
                             st.pyplot(fig_superman_agrandi_tour)  
 
 
             st.subheader("Une seule portion")  
+            st.info("**_Les chronos représentés sont la moyenne sur tous les tours de la portion choisie._**")
             col_top_N_une_seule_portion_indiv, col_biathletes_une_seule_portion_indiv, col_nationalites_une_seule_portion_indiv = st.columns([2,3,3])
             # col_portion_une_seule_portion = st.columns(1)  
-            if nombre_de_shoots == 2:
-                intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires + ["Tir 1 et tir 2"]) 
-            if nombre_de_shoots == 4:
-                intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires + ["Tir 1, tir 2, tir 3 et tir 4"]) 
+            if choix_sport == "Biathlon":
+                if nombre_de_shoots == 2:
+                    intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires + ["Tir 1 et tir 2"]) 
+                if nombre_de_shoots == 4:
+                    intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires + ["Tir 1, tir 2, tir 3 et tir 4"]) 
+            else:
+                intermediaire_a_afficher = st.selectbox("Portion", noms_intermediaires) 
                 
+                 
             with col_top_N_une_seule_portion_indiv:
                 top_n_unique_portion = st.slider("Top ...", min_value=1, max_value=75, value=10, key="top N 3")    
             with col_biathletes_une_seule_portion_indiv:
@@ -817,6 +890,7 @@ with onglets[0]:
                     st.pyplot(analyse_portion_specifique_ratio_individuel(df, top_n_ratio_indiv,  split_amont_ratio_indiv, nationalites_a_afficher, biathletes_a_afficher, choix_homme_ou_femme, distance_de_1_tour, distance_toute_la_course, nombre_de_shoots, choix_sport, nombre_de_tours))
                 
             st.header("Analyse de toutes les portions")
+            st.info("**_Les chronos représentés sont la moyenne sur tous les tours de la portion choisie._**")
             
             col_top_N_toutes_les_portions, col_biathletes_toutes_les_portions, col_nationalites_toutes_les_portions = st.columns(3)
             
@@ -843,7 +917,7 @@ with onglets[0]:
 
             st.header("Analyse collective")
                                        
-            st.markdown("**_Choisir les meilleurs biathlètes par nationalité par rapport à leur classement final de la course._**")
+            st.markdown("**_Choisir les meilleurs athlètes par nationalité par rapport à leur classement final de la course._**")
 
             col_nb_FRA, col_nb_NOR, col_nb_GER, col_nb_SWE, col_nb_ITA = st.columns(5)
             with col_nb_FRA:

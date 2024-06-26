@@ -463,7 +463,7 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
     #     df_temps_de_ski = df
     
     df_temps_de_ski = df_temps_de_ski_ski_de_fond(df)
-    print("df_temps_de_ski_ca_ca: " + str(df_temps_de_ski))
+    # print("df_temps_de_ski_ca_ca: " + str(df_temps_de_ski))
 
     for nom_colonne in df_temps_de_ski.columns.tolist()[4:]:
         for element in df_temps_de_ski[nom_colonne]:
@@ -510,8 +510,8 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
     liste_distance_au_depart_des_ST_pour_plot = liste_distance_au_depart_des_ST.copy()
     liste_distance_au_depart_des_ST_pour_plot.insert(0,0)
     
-    print("liste_distance_au_depart_des_ST_pour_plot: " + str(liste_distance_au_depart_des_ST_pour_plot))
-    print("taille de liste_distance_au_depart_des_ST_pour_plot: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
+    # print("liste_distance_au_depart_des_ST_pour_plot: " + str(liste_distance_au_depart_des_ST_pour_plot))
+    # print("taille de liste_distance_au_depart_des_ST_pour_plot: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
     
 
     # print("taille abscisse superman: " + str(len(liste_distance_au_depart_des_ST_pour_plot)))
@@ -523,8 +523,8 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
 
     ### REPERAGE DU MEILLEUR CHRONO EN TEMPS DE SKI AU FINISH ###
 
-    min_cl = df_ecart_premiere_temps_reel_62["Finish"].min()
-    dossard_meilleure_tds_finish = df_ecart_premiere_temps_reel_62[df_ecart_premiere_temps_reel_62["Finish"] == min_cl].iloc[0,1]
+    min_cl = df_ecart_premiere_temps_reel_62[df.columns.tolist()[-1]].min()
+    dossard_meilleure_tds_finish = df_ecart_premiere_temps_reel_62[df_ecart_premiere_temps_reel_62[df.columns.tolist()[-1]] == min_cl].iloc[0,1]
     liste_chronos_premiere = []
     for index_colonne, nom_colonne in enumerate(df_ecart_premiere_temps_reel_62.columns.to_list()[4:]):
         liste_chronos_premiere.append(df_ecart_premiere_temps_reel_62[df_ecart_premiere_temps_reel_62["Bib"] == dossard_meilleure_tds_finish].iloc[0,index_colonne+4])
