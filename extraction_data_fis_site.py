@@ -38,7 +38,7 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     # PATH = "C:\\Users\\jules\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour local
     
-    PATH = "msedgedriver.exe" # pour github
+    PATH = "C:\\jesptri\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour github
     
     service = Service(PATH)
 
