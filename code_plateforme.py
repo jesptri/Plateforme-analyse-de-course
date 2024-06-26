@@ -367,8 +367,7 @@ with onglets[0]:
         
     _, col_texte, _ = st.columns([5,6,3])
         
-    with col_texte:
-        message_placeholder = st.empty()  
+    message_placeholder = st.empty()  
         
     dictionnaire_course_liste_st = load_split_list(csv_st_file_path_split)
                         
@@ -405,11 +404,11 @@ with onglets[0]:
             # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
             # print("ça devrait se lancer !!!!")
             if st.session_state.bouton_entraineur == True:
-                show_custom_question("Téléchargement en cours...")
+                show_custom_question("Téléchargement en cours...", message_placeholder)
                 time_data_to_excel_ski_de_fond(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison) 
             else:
                 # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
-                show_custom_question("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️")
+                show_custom_question("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️",message_placeholder)
 
         #     # break
         # except:
@@ -429,10 +428,11 @@ with onglets[0]:
     if file_path.is_file() and is_zipfile_valid(file_path):
     
         # message_placeholder.success("**Données téléchargées ! Vous pouvez consulter les analyses !**")
-        show_custom_success("Données téléchargées ! Vous pouvez consulter les analyses !")
+        show_custom_success("Données téléchargées, vous pouvez consulter les analyses !", message_placeholder)
         
-        with col6: # nombre de tours si c'est du ski de fond
-            nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], on_change=on_selectbox_change)
+        if choix_sport_temporary == "Ski de fond":
+            with col6: # nombre de tours si c'est du ski de fond
+                nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], index=1, on_change=on_selectbox_change)
             
         choix_saison = choix_saison_temporary
         choix_lieu_de_la_course = choix_lieu_de_la_course_temporary
@@ -452,7 +452,13 @@ with onglets[0]:
             distance_de_1_tour = f_liste_distance_des_ST_ski_de_fond(df, nombre_de_tours)[1] 
         
         # NOMS DES TYPES DE PORTION #
+
+
+        message_placeholder_2 = st.empty() 
         
+        if choix_sport == "Ski de fond":
+            message_placeholder_3 = st.empty()
+
         try:
             nom_course = f'split_type_de_portion_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
             noms_intermediaires_bosses = loaded_file_type[nom_course][0]  
@@ -461,7 +467,12 @@ with onglets[0]:
             noms_intermediaires_vallones = loaded_file_type[nom_course][3]  
         except:
             # st.error("Données types de portion non rentrées pour la course sélectionnée !")
-            show_custom_error("Données types de portion non rentrées pour la course sélectionnée !")
+            if choix_sport == "Ski de fond":
+                show_custom_question("Sélectionnez le bon nombre de tour, c'est très important !", message_placeholder_2)
+                show_custom_error("Données types de portion non rentrées pour la course sélectionnée !", message_placeholder_3)
+            else:
+                show_custom_error("Données types de portion non rentrées pour la course sélectionnée !", message_placeholder_2)
+            
         
         # ### TOUS LES NOMS D'INTERMEDIAIRES ###
 

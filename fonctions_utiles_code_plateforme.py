@@ -417,7 +417,7 @@ def convert_chrono_to_seconds(chrono):
 
 # message d'erreur
 
-def show_custom_error(message):
+def show_custom_error(message, place_to_write):
     custom_error = f"""
     <div style="
         max-width: 500px;
@@ -433,11 +433,11 @@ def show_custom_error(message):
         {message}
     </div>
     """
-    st.markdown(custom_error, unsafe_allow_html=True)   
+    place_to_write.markdown(custom_error, unsafe_allow_html=True)   
 
 # message de succès
 
-def show_custom_success(message):
+def show_custom_success(message, place_to_write):
     custom_error = f"""
     <div style="
         max-width: 500px;
@@ -453,13 +453,13 @@ def show_custom_success(message):
         {message}
     </div>
     """
-    st.markdown(custom_error, unsafe_allow_html=True)   
+    place_to_write.markdown(custom_error, unsafe_allow_html=True)   
 
 #         font-weight: bold;
 
 # question posée à l'utilisateur
 
-def show_custom_question(message):
+def show_custom_question(message, place_to_write):
     custom_question = f"""
     <div style="
         max-width: 500px;
@@ -475,4 +475,4 @@ def show_custom_question(message):
         {message}
     </div>
     """
-    st.markdown(custom_question, unsafe_allow_html=True)
+    place_to_write.markdown(custom_question, unsafe_allow_html=True)
