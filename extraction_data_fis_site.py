@@ -208,7 +208,7 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     
     # chemin_fichier_excel = f"c:\\Users\\jules\\Plateforme-analyse-de-course\\Ski de fond_{Competition_de_la_course}_{Lieu_de_la_course}_{Sexe + " " + Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour local
 
-    chemin_fichier_excel = f"Ski de fond_{Competition_de_la_course}_{Lieu_de_la_course}_{Sexe + " " + Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
+    chemin_fichier_excel = f"Ski de fond_{Competition_de_la_course}_{Lieu_de_la_course}_{Sexe} {Type_de_la_course}_{Saison_de_la_course}.xlsx" # pour Github
         
     writer = pd.ExcelWriter(chemin_fichier_excel, engine='xlsxwriter')
     
