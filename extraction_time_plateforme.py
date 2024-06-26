@@ -499,15 +499,15 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
         
 
         temps_leader = new_good_data.at[new_good_data.index[0], SPLIT_TIME[i]]
-        print("new_good_data: " + str(new_good_data))
+        # print("new_good_data: " + str(new_good_data))
 
         for index, row in new_good_data.iterrows():
             # print("row[-1]: " + str(row[-1]))
             if index == new_good_data.index[0] or row[-1] == temps_leader:  # Vérifiez que ce n'est pas la première ligne
-                print("Premier cas !")
+                # print("Premier cas !")
                 new_good_data.at[index, SPLIT_TIME[i]] = temps_leader
             else:
-                print("Deuxième cas !")
+                # print("Deuxième cas !")
                 new_good_data.at[index, SPLIT_TIME[i]] += temps_leader 
                       
         
