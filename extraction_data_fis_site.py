@@ -20,6 +20,16 @@ from selenium.webdriver.edge.service import Service
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver import Edge
 
+### IMPORTS POUR MOZILLA ###
+
+from selenium import webdriver
+
+# from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+# from webdriver_manager.firefox import GeckoDriverManager
+
+
+
 from fonctions_utiles_code_plateforme import convert_chrono_to_seconds
 from fonctions_utiles_code_plateforme import capture_screenshot
 from fonctions_utiles_code_plateforme import save_html_content
@@ -40,25 +50,30 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     # PATH = "C:\\Users\\jules\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour local
     
-    PATH = "msedgedriver.exe" # pour github
+    # PATH = "msedgedriver.exe" # pour github
     
-    service = Service(PATH)
+    # service = Service(PATH)
 
-    edge_options = Options()
-    edge_options.use_chromium = True
-    edge_options.add_argument('--headless')
-    edge_options.add_argument('--no-sandbox')
-    edge_options.add_argument('--disable-dev-shm-usage')
-    edge_options.add_argument('--window-size=1920x1080')
+    # edge_options = Options()
+    # edge_options.use_chromium = True
+    # edge_options.add_argument('--headless')
+    # edge_options.add_argument('--no-sandbox')
+    # edge_options.add_argument('--disable-dev-shm-usage')
+    # edge_options.add_argument('--window-size=1920x1080')
 
-    # Initialisation du WebDriver
+    # # Initialisation du WebDriver
 
-    service = Service(PATH)
-    driver = webdriver.Edge(service=service, options=edge_options)
+    # service = Service(PATH)
+    # driver = webdriver.Edge(service=service, options=edge_options)
+            
+    options = Options()
+    options.headless = True
+            
+    driver = webdriver.Firefox(options=options)
             
     url = "https://www.fis-ski.com/"
     driver.get(url)
-    driver.maximize_window()
+    # driver.maximize_window()
 
     # Cookies
 
