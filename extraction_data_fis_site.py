@@ -40,7 +40,7 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     # PATH = "C:\\Users\\jules\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour local
     
-    PATH = "msedgedriver.exe" # pour github
+    PATH = "jesptri\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour github
     
     service = Service(PATH)
 
@@ -116,12 +116,12 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     # Button Search
     
-    capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\avant_reduction_taille.png")
+    # capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\avant_reduction_taille.png")
 
     driver.set_window_size(1280, 800) # diminue la taille de la fenetre pour que ça soit configuré comme sans le mode headless !
     
-    capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\apres_reduction_taille.png")
-    save_html_content(driver, "C:\\Users\\jules\\Plateforme-analyse-de-course\\erreur.html")
+    # capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\apres_reduction_taille.png")
+    # save_html_content(driver, "C:\\Users\\jules\\Plateforme-analyse-de-course\\erreur.html")
     
     # element_1 = driver.find_element(By.XPATH,"//div[@class='collapse-in-modal']//div[@class='collapse-in-modal__content']//form[@class='form']//div[@class='form__inner']//div[@class='row']//button[contains(text(), 'Search')]")#//div[@class='col-md-4 hidden-lg hidden-sm-down form__itempt-1']")
     # if element_1.is_displayed():
