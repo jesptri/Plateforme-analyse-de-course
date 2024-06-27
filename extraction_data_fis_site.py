@@ -26,7 +26,7 @@ from selenium import webdriver
 
 # from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-# from webdriver_manager.firefox import GeckoDriverManager
+from webdriver_manager.firefox import GeckoDriverManager
 
 
 
@@ -70,7 +70,7 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     options.headless = True
     options.add_argument("--disable-gpu") 
             
-    driver = webdriver.Firefox(options=options)
+    driver = webdriver.Firefox(executable_path=GeckoDriverManager().install(), options=options)
             
     url = "https://www.fis-ski.com/"
     driver.get(url)
