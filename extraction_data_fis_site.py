@@ -66,11 +66,10 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     # driver = webdriver.Edge(service=service, options=edge_options)
             
     options = Options()
-    # options.headless = True
     options.add_argument("--headless")
     options.add_argument("--disable-gpu") 
             
-    driver = webdriver.Firefox(options=options)
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
             
     url = "https://www.fis-ski.com/"
     driver.get(url)
