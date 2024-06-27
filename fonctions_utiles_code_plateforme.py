@@ -476,3 +476,12 @@ def show_custom_question(message, place_to_write):
     </div>
     """
     place_to_write.markdown(custom_question, unsafe_allow_html=True)
+    
+def capture_screenshot(driver, file_name="error_screenshot.png"):
+    driver.save_screenshot(file_name)
+    print(f"Capture d'écran sauvegardée sous {file_name}")
+    
+def save_html_content(driver, file_name="page_source.html"):
+    with open(file_name, "w", encoding="utf-8") as f:
+        f.write(driver.page_source)
+    print(f"Contenu HTML de la page sauvegardé sous {file_name}")

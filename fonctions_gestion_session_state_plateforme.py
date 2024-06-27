@@ -80,7 +80,7 @@ def empty_the_list(nom_liste_split_Jonas):
 def save_split_list(csv_st_file_path):
     
     fichier_loaded = load_split_list(csv_st_file_path)
-    # print("existing_items_split: " + str(fichier_loaded))
+    print("existing_items_split: " + str(fichier_loaded))
     
     # Ajouter ou mettre à jour les nouveaux éléments dans existing_items_split
     for key in st.session_state.keys():
@@ -104,23 +104,13 @@ def load_split_list(csv_st_file_path):
         with open(csv_st_file_path, "r", encoding="utf-8-sig") as f:  # Utilisation de l'encodage utf-8-sig
             reader = csv.reader(f)
             for row in reader:
-                # row est une liste contenant une seule entrée
-                # try:
-                # row_data = row[0]
-                # row[0].split(",")
-                # print("row: " + str(row))
-                # print("row.split(','): " + str(row.split(",")))
                 try:
                     nom_liste_split = row[0]
-                    liste_split_json = row[1]
-                    
-                    # nom_liste_split, liste_split_json = row.split(",", 1)
-                    
+                    liste_split_json = row[1]                    
                     liste_split_json = liste_split_json.replace('""', '"')
                     liste_split = [element.strip().strip('"') for element in liste_split_json[1:-1].split(',')]
                     my_list[nom_liste_split] = liste_split
                 except:
-                #     print("exception levée")
                     pass
 
         # Convertir les caractères Unicode en caractères normaux après avoir parcouru toute la liste
@@ -135,10 +125,6 @@ def load_split_list(csv_st_file_path):
                 element = element.encode('utf-8').decode('unicode_escape')
                 cleaned_list.append(element)
             my_list[key] = cleaned_list
-            # print("cleaned value: " + str(cleaned_list))
-            
-            # print("my_list: " + str(my_list))
-
         return my_list
     except FileNotFoundError:
         st.warning("Le fichier CSV n'existe pas encore. Ajoutez des éléments et enregistrez-les d'abord.")
@@ -221,3 +207,10 @@ def show_temporary_message(message, duration):
     placeholder.success(message)
     time.sleep(duration)
     placeholder.empty()
+    
+def show_temporary_error_message(message, duration):
+    placeholder = st.empty()
+    placeholder.error(message)
+    time.sleep(duration)
+    placeholder.empty()
+    

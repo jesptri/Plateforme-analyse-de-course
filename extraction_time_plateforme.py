@@ -57,7 +57,7 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
     edge_options.add_argument('--disable-dev-shm-usage')
 
     # Initialisation du WebDriver
-    service = Service(PATH)
+    
     driver = webdriver.Edge(service=service, options=edge_options)
             
     url = "https://biathlonresults.com/#/datacenter"

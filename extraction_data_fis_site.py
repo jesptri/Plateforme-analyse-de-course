@@ -21,6 +21,8 @@ from selenium.webdriver.edge.options import Options
 from selenium.webdriver import Edge
 
 from fonctions_utiles_code_plateforme import convert_chrono_to_seconds
+from fonctions_utiles_code_plateforme import capture_screenshot
+from fonctions_utiles_code_plateforme import save_html_content
 
 
 def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, Type_de_la_course, Saison_de_la_course):
@@ -38,28 +40,37 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     # PATH = "C:\\Users\\jules\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour local
     
-    PATH = "C:\\jesptri\\Plateforme-analyse-de-course\\msedgedriver.exe" # pour github
+    PATH = "msedgedriver.exe" # pour github
     
     service = Service(PATH)
 
     edge_options = Options()
-    # edge_options.add_argument('--headless')
-    # edge_options.add_argument('--no-sandbox')
-    # edge_options.add_argument('--disable-dev-shm-usage')
+    edge_options.use_chromium = True
+    edge_options.add_argument('--headless')
+    edge_options.add_argument('--no-sandbox')
+    edge_options.add_argument('--disable-dev-shm-usage')
+    edge_options.add_argument('--window-size=1920x1080')
 
     # Initialisation du WebDriver
 
     service = Service(PATH)
     driver = webdriver.Edge(service=service, options=edge_options)
-    driver.maximize_window()
             
     url = "https://www.fis-ski.com/"
     driver.get(url)
+    driver.maximize_window()
 
     # Cookies
 
-    cookies = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='CybotCookiebotDialogBodyButton']")))
+    sleep(1)
+
+    cookies = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']")))
+    # cookies = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Allow all')]")))
     cookies.click()
+
+    sleep(1)
+
+    # En mode headless il doit falloir cliquer sur les 3 barres en haut à droite
 
     # Calendar & Results
 
@@ -101,11 +112,27 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
     annee_2024 = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, f"//li[contains(text(), '{Saison_de_la_course}')]")))
     annee_2024.click() 
+    sleep(0.2)
 
     # Button Search
+    
+    capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\avant_reduction_taille.png")
 
+    driver.set_window_size(1280, 800) # diminue la taille de la fenetre pour que ça soit configuré comme sans le mode headless !
+    
+    capture_screenshot(driver,"C:\\Users\\jules\\Plateforme-analyse-de-course\\apres_reduction_taille.png")
+    save_html_content(driver, "C:\\Users\\jules\\Plateforme-analyse-de-course\\erreur.html")
+    
+    # element_1 = driver.find_element(By.XPATH,"//div[@class='collapse-in-modal']//div[@class='collapse-in-modal__content']//form[@class='form']//div[@class='form__inner']//div[@class='row']//button[contains(text(), 'Search')]")#//div[@class='col-md-4 hidden-lg hidden-sm-down form__itempt-1']")
+    # if element_1.is_displayed():
+    #     print("element_1 est visible sur la page.")
+    
     Button_search = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn btn_yellow btn_fluid btn_size_small btn_label_bold']")))
+    # Button_search = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, "//button[@class='btn btn_yellow btn_fluid btn_size_small btn_label_bold']")))
+    
     Button_search.click() 
+    
+    print("Ca a cliqué sur Search !")
 
     # Lieu de la course
 

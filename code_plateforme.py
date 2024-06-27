@@ -84,7 +84,7 @@ with onglets[5]:
         choix_saison_temporary_jonas = st.selectbox("Saison", ["2023-2024"], key="choix_saison_Jonas", on_change=off_button_click_jonas)
 
     with col_4_Jonas: # lieu de la course
-        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Kontiolahti (FIN)", "Idre Fjaell (SWE)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
+        choix_lieu_de_la_course_temporary_jonas = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Kontiolahti (FIN)", "Oslo Holmenkollen (NOR)", "Idre Fjaell (SWE)"], key="choix_lieu_de_la_course_Jonas", on_change=off_button_click_jonas)
 
     with col_5_Jonas: # type de la course
         choix_type_de_la_course_temporary_jonas = st.selectbox("Type de la course", ["Men 10km Sprint", "Women 7.5km Sprint", "Men 20km Individual", "Women 15km Individual"], key="choix_type_de_la_course_Jonas", on_change=off_button_click_jonas)
@@ -292,7 +292,7 @@ with onglets[0]:
         
     st.header("Choix de la course")
 
-    col1, col2, col3, col4, col5, col6 = st.columns(6)
+    col1, col2, col3, col4, col5, col6 = st.columns([2,2,1.5,2,3,1.5])
 
     with col1: # sport
         choix_sport_temporary = st.selectbox("Discipline", ["Biathlon", "Ski de fond"]) #["Biathlon", "Ski de fond"])
@@ -311,7 +311,7 @@ with onglets[0]:
 
     if choix_sport_temporary == "Biathlon":
         with col4: # lieu de la course
-            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Hochfilzen (AUT)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oberhof (GER)", "Kontiolahti (FIN)", "Nove Mesto Na Morave (CZE)", "Idre Fjaell (SWE)", "Canmore (CAN)", "Soldier Hollow, Utah (USA)", "Oslo Holmenkollen (NOR)", "Sjusjoen (NOR)", "Martell-Val Martello (ITA)", "Ridnaun-Val Ridanna (ITA)", "Arber (GER)", "Brezno-Osrblie (SVK)"], on_change=on_selectbox_change)
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Oestersund (SWE)", "Hochfilzen (AUT)", "Ruhpolding (GER)", "Lenzerheide (SUI)", "Antholz-Anterselva (ITA)", "Oslo Holmenkollen (NOR)", "Oberhof (GER)", "Kontiolahti (FIN)", "Nove Mesto Na Morave (CZE)", "Idre Fjaell (SWE)", "Canmore (CAN)", "Soldier Hollow, Utah (USA)", "Oslo Holmenkollen (NOR)", "Sjusjoen (NOR)", "Martell-Val Martello (ITA)", "Ridnaun-Val Ridanna (ITA)", "Arber (GER)", "Brezno-Osrblie (SVK)"], on_change=on_selectbox_change)
 
         with col5: # type de la course
             choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 10km Sprint","Women 7.5km Sprint","Men 20km Individual","Women 15km Individual", "Men 15km Short Individual", "Women 12.5km Short Individual"], on_change=on_selectbox_change)
@@ -323,7 +323,7 @@ with onglets[0]:
             choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Ruka", "Gällivare", "Östersund", "Trondheim", "Toblach", "Davos", "Val Di Fiemme", "Oberhof", "Goms", "Canmore", "Theodore Wirth Park, Minneapolis", "Lahti", "Oslo", "Drammen", "Falun"], on_change=on_selectbox_change)
         
         with col5: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Pursuit Classic", "Women 20km Pursuit Classic", "Men Sprint Free", "Women Sprint Free", "Men 20km Mass Start Free", "Women 20km Mass Start Free", "Men 15km Mass Start Free", "Women 15km Mass Start Free", "Men 20km Mass Start Classic", "Women 20km Mass Start Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Pursuit Classic", "Women 20km Pursuit Classic", "Men Sprint Final Free", "Women Sprint Final Free", "Men Sprint Free", "Women Sprint Free", "Men 20km Mass Start Free", "Women 20km Mass Start Free", "Men 15km Mass Start Free", "Women 15km Mass Start Free", "Men 20km Mass Start Classic", "Women 20km Mass Start Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
         
         # with col6: # nombre de tours si c'est du ski de fond
         #     nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], on_change=on_selectbox_change)
@@ -385,18 +385,28 @@ with onglets[0]:
     if not file_path.is_file():
         if choix_sport_temporary == "Biathlon":
             for split_course in dictionnaire_course_liste_st:
+                print("Le code est passé là !")
+                print(("dictionnaire_course_liste_st: " + str(dictionnaire_course_liste_st)))
+                # key = f'split_time_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
                 key = f'split_time_{choix_sport}_{choix_competition}_{choix_lieu_de_la_course}_{choix_type_de_la_course}_{choix_saison}'
-                if key in split_course:    
+                print("key: " + str(key))
+                print("condition vérifiée ou pas ? " + str(key == split_course))
+                if key == split_course:    
                     SPLIT_TIME = dictionnaire_course_liste_st[split_course]
                     list_found_or_not = True
                 if not list_found_or_not:
                     # message_placeholder.error("Erreur, liste de split time non trouvée.")
-                    show_custom_error("Erreur:")
-                    show_custom_error("Soit la liste de split time n'a pas été rentrée !")
-                    show_custom_error("Soit la course sélectionnée n'existe pas !")
-                    # show_custom_error("Vérifiez les données sélectionnées !")
-                    break
+                    # message_placeholder_1 = st.empty()
+                    # message_placeholder_2 = st.empty()
+                    # message_placeholder_3 = st.empty()
+                    
+                    # show_custom_error("Erreur:", message_placeholder_1)
+                    # show_custom_error("Soit la liste de split time n'a pas été rentrée !", message_placeholder_2)
+                    # show_custom_error("Soit la course sélectionnée n'existe pas !", message_placeholder_3)
+                    message_placeholder.error("Erreur: soit la liste de split time n'a pas été rentrée, soit la course sélectionnée n'existe pas !")
+                    # break # CE BREAK CREE DES ERREURS !!!!
                 else: 
+                    print("Ou par ici !")
                     message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️")
                     if st.session_state.bouton_entraineur == True:
                         time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")                     
@@ -405,7 +415,10 @@ with onglets[0]:
             # print("ça devrait se lancer !!!!")
             if st.session_state.bouton_entraineur == True:
                 show_custom_question("Téléchargement en cours...", message_placeholder)
+            # try:
                 time_data_to_excel_ski_de_fond(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison) 
+                # except:
+                #     show_custom_error("Erreur lors du téléchargement, les données ne sont peut-être pas disponibles ! Vérifiez la course sélectionnée !", message_placeholder)
             else:
                 # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
                 show_custom_question("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️",message_placeholder)
@@ -468,7 +481,7 @@ with onglets[0]:
         except:
             # st.error("Données types de portion non rentrées pour la course sélectionnée !")
             if choix_sport == "Ski de fond":
-                show_custom_question("Sélectionnez le bon nombre de tour, c'est très important !", message_placeholder_2)
+                show_custom_question("⚠️Sélectionnez le bon nombre de tour, c'est très important !⚠️", message_placeholder_2)
                 show_custom_error("Données types de portion non rentrées pour la course sélectionnée !", message_placeholder_3)
             else:
                 show_custom_error("Données types de portion non rentrées pour la course sélectionnée !", message_placeholder_2)
