@@ -20,20 +20,16 @@ from selenium.webdriver import Edge
 
 ### IMPORTS POUR MOZILLA ###
 
-# from selenium.webdriver.firefox.service import Service
-# from selenium.webdriver.firefox.options import Options
-# from webdriver_manager.firefox import GeckoDriverManager
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
+from webdriver_manager.firefox import GeckoDriverManager
 
 ### IMPORTS AUTRES FONCTIONS ###
 
-# from extraction_nom_nationalite_plateforme import tableau_nom_nationalite
 from fonctions_utiles_code_plateforme import convert_chrono_to_seconds
 
-
-
 ### FONCTION ###
-
-
 
 def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_course, Saison_de_la_course, SPLIT_TIME, moteur_de_recherche=str):
     
@@ -48,20 +44,26 @@ def time_data_to_excel(Competition_de_la_course, Lieu_de_la_course, Type_de_la_c
 
 
     # if moteur_de_recherche == "edge":
-    PATH = "msedgedriver.exe"
-    service = Service(PATH)
+    # PATH = "msedgedriver.exe"
+    # service = Service(PATH)
+    # edge_options = Options()
+    # edge_options.add_argument('--headless')
+    # edge_options.add_argument('--no-sandbox')
+    # edge_options.add_argument('--disable-dev-shm-usage')    
+    # driver = webdriver.Edge(service=service, options=edge_options)
     
-    edge_options = Options()
-    edge_options.add_argument('--headless')
-    edge_options.add_argument('--no-sandbox')
-    edge_options.add_argument('--disable-dev-shm-usage')
-
-    # Initialisation du WebDriver
     
-    driver = webdriver.Edge(service=service, options=edge_options)
+    # if firefox
+    options = Options()
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu") 
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+    
+    
             
     url = "https://biathlonresults.com/#/datacenter"
     driver.get(url)
+    driver.set_window_size(1920, 1000)
     
     ### PREMIER BOUTON + COOKIES
 

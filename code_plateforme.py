@@ -407,9 +407,11 @@ with onglets[0]:
                     # break # CE BREAK CREE DES ERREURS !!!!
                 else: 
                     print("Ou par ici !")
-                    message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️")
+                    show_custom_question("Données chronos non téléchargées ! Voulez-vous les télécharger ? ⚠️Vérifiez que la course choisie s'est bien déroulée !⚠️",message_placeholder)
                     if st.session_state.bouton_entraineur == True:
-                        time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")                     
+                        show_custom_question("Téléchargement en cours !",message_placeholder)
+                        time_data_to_excel(choix_competition, choix_lieu_de_la_course, choix_type_de_la_course, choix_saison, SPLIT_TIME, "edge")      
+                                   
         else:
             # message_placeholder.write("Données chronos non téléchargées ! Voulez-vous les télécharger ?")
             # print("ça devrait se lancer !!!!")
