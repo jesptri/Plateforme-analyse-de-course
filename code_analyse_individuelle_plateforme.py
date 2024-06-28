@@ -131,8 +131,14 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
                 plt.scatter(index_biathlete+1, df_3_tours.iloc[index_biathlete, 5] + df_3_tours.iloc[index_biathlete, 6] + df_3_tours.iloc[index_biathlete, 4] + df_3_tours.iloc[index_biathlete, 7] + df_3_tours.iloc[index_biathlete, 8] - chrono_meilleur_temps_de_ski, color="grey")
 
     # plt.scatter(np.arange(df_3_tours.shape[0])+1, df_3_tours.iloc[:, 5] + df_3_tours.iloc[:, 6] + df_3_tours.iloc[:, 7])
-    labels = ["+" + str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
+    # labels = ["+" + str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
+    # plt.gca().set_yticklabels(labels)
+        
+    ticks_positions = plt.gca().get_yticks()
+    labels = [f"{int(tick)}" + "s" for tick in ticks_positions]
+    plt.gca().set_yticks(ticks_positions)
     plt.gca().set_yticklabels(labels)
+    
     plt.xticks(np.arange(df_3_tours.shape[0])+1, [str(df_3_tours.iloc[i, 0]) + " - " + df_3_tours.iloc[i, 2] for i in range(df_3_tours.shape[0])], rotation=90, fontsize=police)
     plt.grid(linestyle='--', linewidth=0.5)
     plt.title("Temps de ski total (retard au meilleur temps)")
@@ -157,8 +163,15 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
         else:
             plt.boxplot(df_3_tours.transpose().iloc[4:-1, index_biathlete], positions=[index_biathlete+1], boxprops=dict(color="grey"), whiskerprops=dict(color="grey"), medianprops=dict(color="grey"), whis=[0, 100])
                        
-    labels = [str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
+    # labels = [str(label.get_text()) + "s" for label in plt.gca().get_yticklabels()]
+    # plt.gca().set_yticklabels(labels)
+    
+    ticks_positions = plt.gca().get_yticks()
+    labels = [f"{int(tick)}" + "s" for tick in ticks_positions]
+    plt.gca().set_yticks(ticks_positions)
     plt.gca().set_yticklabels(labels)
+    
+    
     plt.xticks(np.arange(df_3_tours.shape[0])+1, [str(df_3_tours.iloc[i]["Ranking"]) + " - " + df_3_tours.iloc[i]["Name"] for i in range(df_3_tours.shape[0])], rotation=90, fontsize=police)
     plt.grid(linestyle='--', linewidth=0.5)
     plt.title("Temps de ski par tour")
@@ -313,6 +326,10 @@ def graphes_VTT(df, sexe, top_n, biathletes_a_afficher, nombre_de_shoots, split_
 
     plt.title("Pacing tour par tour")
     plt.xticks(np.arange(nombre_de_shoots+1)+1, ["Tour " + str(i) for i in range(1, nombre_de_shoots+2)])
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
+
     plt.gca().spines['right'].set_visible(False)
     if nombre_de_shoots == 2:
        plt.xlim(0,4)    
@@ -411,7 +428,6 @@ def graphes_VTT_ski_de_fond(df, sexe, top_n, biathletes_a_afficher, nombre_de_to
             split_pour_graphe_pacing_tous_les_tours[numero_tour] = split_tour_par_tour_ski_de_fond(df, nombre_de_tours)[numero_tour][index_du_split_choisi]
 
     df_temps_de_ski = df_temps_de_ski_ski_de_fond(df)
-    print("df_temps_de_ski: " + str(df_temps_de_ski))
 
     for index_biathlete in range(df_3_tours_not_filtered.shape[0]):
         

@@ -639,8 +639,10 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
         else:
             plt.gca().get_xgridlines()[i].set_linewidth(0.05)
     
-    
     limite_pour_plot_en_y = plt.ylim()[0]
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
 
     plt.ylim(limite_pour_plot_en_y)
     # plt.ylabel("Ecart par rapport au Superman")
@@ -740,6 +742,9 @@ def graphes_superman_et_ecart_au_leader_ski_de_fond(df, liste_distance_au_depart
             
             
     plt.ylim(limite_pour_plot_en_y)
+    
+    formatter = plt.FuncFormatter(custom_format)
+    plt.gca().yaxis.set_major_formatter(formatter)
     
     # plt.ylabel("Ecart par rapport au leader en temps réel (s)")
     plt.legend()   

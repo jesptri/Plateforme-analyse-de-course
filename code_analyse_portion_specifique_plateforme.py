@@ -14,6 +14,7 @@ from fonctions_utiles_code_plateforme import split_tour_par_tour_ski_de_fond
 from fonctions_utiles_code_plateforme import df_to_df_moy_3_tours_ski_de_fond
 from fonctions_utiles_code_plateforme import f_liste_distance_des_ST_ski_de_fond
 from fonctions_utiles_code_plateforme import df_temps_de_ski_ski_de_fond
+from fonctions_utiles_code_plateforme import custom_format
 
 @st.cache_data()
 def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_afficher, nationalites, liste_des_split_time, distance_de_1_tour, distance_toute_la_course, affichage, nombre_de_shoots, numero_du_tour):
@@ -81,7 +82,6 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
            
     
     ### SI MEILLEUR SKIEUR ###
-    
  
     if affichage == "Athlète au meilleur temps de ski sur la course":
         
@@ -159,9 +159,10 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
             # print(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time)
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
 
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
     
     ### SI MEILLEUR ATHLETE SELECTIONNE ### 
-    
     
     elif affichage == "Meilleur athlète sélectionné/e":
         
@@ -233,12 +234,11 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
             plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
-        
-        
-        
-    ### SI SUPERMAN DE LA COURSE ###
-    
-        
+         
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
+         
+    ### SI SUPERMAN DE LA COURSE ###  
         
     elif affichage == "Superman":
         
@@ -312,8 +312,10 @@ def analyse_portion_specifique_graphe_1_sans_meme_echelle(df, biathletes_a_affic
             plt.xticks(liste_pour_plot_en_abscisse, ["Départ"] + split_time, rotation=90)
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
-        
-        
+            
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
+            
     ### SI SUPERMAN DE LA PORTION SELECTIONNEE ###
             
         
@@ -395,7 +397,6 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
     
     ### SI MEILLEUR SKIEUR ###
     
-    print("Numéro tour: " + str(numero_du_tour))
  
     if affichage == "Athlète au meilleur temps de ski sur la course":
         
@@ -471,6 +472,8 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
             # print(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time)
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
 
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
     
     ### SI MEILLEUR ATHLETE SELECTIONNE ### 
     
@@ -544,7 +547,8 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
         
-        
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
         
     ### SI SUPERMAN DE LA COURSE ###
     
@@ -621,6 +625,8 @@ def analyse_portion_specifique_graphe_1(df, biathletes_a_afficher, nationalites,
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
         
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
         
     ### SI SUPERMAN DE LA PORTION SELECTIONNEE ###
             
@@ -2055,6 +2061,8 @@ def analyse_portion_specifique_graphe_1_ski_de_fond(df, biathletes_a_afficher, n
             # print(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time)
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
 
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
     
     ### SI MEILLEUR ATHLETE SELECTIONNE ### 
     
@@ -2128,7 +2136,8 @@ def analyse_portion_specifique_graphe_1_ski_de_fond(df, biathletes_a_afficher, n
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
         
-        
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
         
     ### SI SUPERMAN DE LA COURSE ###
     
@@ -2205,7 +2214,9 @@ def analyse_portion_specifique_graphe_1_ski_de_fond(df, biathletes_a_afficher, n
         else:
             plt.xticks(liste_pour_plot_en_abscisse, [df.columns.tolist()[df.columns.get_loc(split_time[0]) - 1]] + split_time, rotation=90)
         
-        
+        formatter = plt.FuncFormatter(custom_format)
+        plt.gca().yaxis.set_major_formatter(formatter)
+
     ### SI SUPERMAN DE LA PORTION SELECTIONNEE ###
             
         

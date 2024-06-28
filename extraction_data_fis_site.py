@@ -66,8 +66,8 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     # driver = webdriver.Edge(service=service, options=edge_options)
             
     options = Options()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu") 
+    # options.add_argument("--headless")
+    # options.add_argument("--disable-gpu") 
             
     driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
             
@@ -191,6 +191,7 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     for index_data_scraped, data_athlete_scraped in enumerate(athletes_containers):
         
         data_text = data_athlete_scraped.text
+        # print("data_text: " + str(data_text))
         data_text_list = data_text.split("\n")
         
         # print("taille liste: " + str(len(data_text_list)))
@@ -221,7 +222,15 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
                 element_bis = data_text_list[index_element+2]
                 data_athlete.append(convert_chrono_to_seconds(element_bis))
                 index_chrono = 0
-                while element_bis != "Sector Time":
+                # found_sector_time = False
+                while element_bis != "Sector Time":# and not found_sector_time:
+                    # for test_sector_time in range(7):
+                    #     if index_element == 12:
+                    #         print("data_text_list[index_element+2+test_sector_time]: " + str(data_text_list[index_element+2+test_sector_time]))
+                    #         print("data_text_list: " + str(data_text_list))
+                    #     if data_text_list[index_element+2+test_sector_time] == "Sector Time":
+                    #         found_sector_time = True
+                    #         break
                     index_chrono += 7
                     if index_element+2+index_chrono < len(data_text_list):
                         element_bis = data_text_list[index_element+2+index_chrono]
@@ -243,6 +252,9 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
     # print("split_time_list: " + str(split_time_list))
         
     df = pd.DataFrame(data_all_athletes)
+    
+    # print("split_time_list: " + str(split_time_list))
+    print("df: " + str(df))
 
     colonnes_df = ["Ranking", "Bib", "Name", "Country"] + split_time_list
 
@@ -262,3 +274,5 @@ def time_data_to_excel_ski_de_fond(Competition_de_la_course, Lieu_de_la_course, 
 
 # time_data_to_excel_ski_de_fond("World Cup", "Canmore", "Women 15km Mass Start Free", 2024)
 
+# def get_types_for_place():
+    

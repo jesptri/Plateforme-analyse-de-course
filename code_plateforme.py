@@ -320,10 +320,12 @@ with onglets[0]:
     
     else:
         with col4: # lieu de la course
-            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Ruka", "Gällivare", "Östersund", "Trondheim", "Toblach", "Davos", "Val Di Fiemme", "Oberhof", "Goms", "Canmore", "Theodore Wirth Park, Minneapolis", "Lahti", "Oslo", "Drammen", "Falun"], on_change=on_selectbox_change)
+            choix_lieu_de_la_course_temporary = st.selectbox("Lieu de la course", ["Choisissez le lieu", "Ruka", "Gällivare", "Östersund", "Trondheim", "Toblach", "Davos", "Val Di Fiemme", "Oberhof", "Goms", "Canmore", "Theodore Wirth Park, Minneapolis", "Lahti", "Oslo", "Drammen", "Falun"], on_change=on_selectbox_change)
+        
+# insérer à cet endroit 
         
         with col5: # type de la course
-            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Men 20km Pursuit Classic", "Women 20km Pursuit Classic", "Men Sprint Final Free", "Women Sprint Final Free", "Men Sprint Free", "Women Sprint Free", "Men 20km Mass Start Free", "Women 20km Mass Start Free", "Men 15km Mass Start Free", "Women 15km Mass Start Free", "Men 20km Mass Start Classic", "Women 20km Mass Start Classic"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
+            choix_type_de_la_course_temporary = st.selectbox("Type de la course", ["Choisissez l'épreuve", "Men 20km Pursuit Classic", "Women 20km Pursuit Classic", "Men 20km Pursuit Free", "Women 20km Pursuit Free", "Men Sprint Qualification Free", "Women Sprint Qualification Free", "Men Sprint Qualification Classic", "Women Sprint Qualification Classic", "Men Sprint Free", "Women Sprint Free", "Men 20km Mass Start Free", "Women 20km Mass Start Free", "Men 15km Mass Start Free", "Women 15km Mass Start Free", "Men 20km Mass Start Classic", "Women 20km Mass Start Classic", "Men 10km Interval Start Classic", "Women 10km Interval Start Classic", "Men 10km Interval Start Free", "Women 10km Interval Start Free", "Men 20km Skiathlon Classic/Free", "Women 20km Skiathlon Classic/Free"], on_change=on_selectbox_change)# espace à la fin, c'est fait exprès
         
         # with col6: # nombre de tours si c'est du ski de fond
         #     nombre_de_tours = st.selectbox("Nombre de tours", [1,2,3,4,5,6], on_change=on_selectbox_change)
